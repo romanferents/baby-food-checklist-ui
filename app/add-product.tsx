@@ -23,11 +23,6 @@ export default function AddProductScreen(): React.JSX.Element {
   const [category, setCategory] = useState<ProductCategory>('vegetables');
   const [notes, setNotes] = useState('');
 
-  const categoryOptions = CATEGORY_ORDER.map((cat) => ({
-    value: cat,
-    label: t(`categories.${cat}`).slice(0, 10) + '…',
-  }));
-
   const handleSave = () => {
     if (!nameUk.trim()) return;
 

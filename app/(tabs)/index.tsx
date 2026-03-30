@@ -16,6 +16,7 @@ import { CATEGORY_ORDER } from '../../src/utils/categories';
 import { Product } from '../../src/features/products/types';
 import { spacing } from '../../src/theme/spacing';
 import { FilterType } from '../../src/features/products/types';
+import { DEBOUNCE_DELAY_MS } from '../../src/constants';
 
 const FILTER_KEYS: FilterType[] = ['all', 'tried', 'notTried', 'favorites'];
 
@@ -30,7 +31,7 @@ export default function ProductsScreen(): React.JSX.Element {
   const allProducts = useProductsStore((s) => s.products);
 
   const { setSearchQuery, setFilter, setSelectedCategory, updateProduct } = useProductActions();
-  const debouncedSearch = useDebounce(rawSearchQuery, 300);
+  const debouncedSearch = useDebounce(rawSearchQuery, DEBOUNCE_DELAY_MS);
 
   const stats = getAppStats(allProducts);
   const filteredProducts = useProducts();

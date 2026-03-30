@@ -24,7 +24,11 @@
     "rating": {
       "liked": "Сподобалось 😍",
       "neutral": "Нейтрально 😐",
-      "disliked": "Не сподобалось 😞"
+      "disliked": "Не сподобалось 😞",
+      "likedText": "Сподобалось",
+      "neutralText": "Нейтрально",
+      "dislikedText": "Не сподобалось",
+      "label": "Оцінка"
     },
     "favorite": "Улюблений",
     "reactionNotes": "Нотатки про реакцію/алергію",

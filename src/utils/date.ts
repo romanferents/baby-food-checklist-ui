@@ -30,7 +30,22 @@ export function formatRelativeDate(dateString: string, language: string): string
   } else if (diffDays === 1) {
     return language === 'uk' ? 'Вчора' : 'Yesterday';
   } else if (diffDays < 7) {
-    return language === 'uk' ? `${diffDays} дні тому` : `${diffDays} days ago`;
+    if (language === 'uk') {
+      const lastTwo = diffDays % 100;
+      const lastOne = diffDays % 10;
+      let form: string;
+      if (lastTwo >= 11 && lastTwo <= 19) {
+        form = 'днів';
+      } else if (lastOne === 1) {
+        form = 'день';
+      } else if (lastOne >= 2 && lastOne <= 4) {
+        form = 'дні';
+      } else {
+        form = 'днів';
+      }
+      return `${diffDays} ${form} тому`;
+    }
+    return `${diffDays} days ago`;
   }
 
   return formatShortDate(dateString, language);

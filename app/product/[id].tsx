@@ -153,7 +153,7 @@ export default function ProductDetailScreen(): React.JSX.Element {
       {product.tried && (
         <View style={styles.section}>
           <Text variant="labelLarge" style={[styles.label, { color: theme.colors.onSurfaceVariant }]}>
-            {t('product.rating.liked').split(' ')[0]} / Rating
+            {t('product.rating.label')}
           </Text>
           <RatingSelector value={product.rating} onChange={handleRatingChange} />
         </View>

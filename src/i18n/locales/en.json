@@ -24,7 +24,11 @@
     "rating": {
       "liked": "Liked 😍",
       "neutral": "Neutral 😐",
-      "disliked": "Disliked 😞"
+      "disliked": "Disliked 😞",
+      "likedText": "Liked",
+      "neutralText": "Neutral",
+      "dislikedText": "Disliked",
+      "label": "Rating"
     },
     "favorite": "Favorite",
     "reactionNotes": "Reaction / Allergy Notes",

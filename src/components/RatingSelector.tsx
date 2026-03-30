@@ -11,9 +11,9 @@ interface RatingSelectorProps {
 }
 
 const RATINGS: { value: ProductRating; emoji: string; labelKey: string }[] = [
-  { value: 'liked', emoji: '😍', labelKey: 'product.rating.liked' },
-  { value: 'neutral', emoji: '😐', labelKey: 'product.rating.neutral' },
-  { value: 'disliked', emoji: '😞', labelKey: 'product.rating.disliked' },
+  { value: 'liked', emoji: '😍', labelKey: 'product.rating.likedText' },
+  { value: 'neutral', emoji: '😐', labelKey: 'product.rating.neutralText' },
+  { value: 'disliked', emoji: '😞', labelKey: 'product.rating.dislikedText' },
 ];
 
 export function RatingSelector({ value, onChange }: RatingSelectorProps): React.JSX.Element {
@@ -33,7 +33,7 @@ export function RatingSelector({ value, onChange }: RatingSelectorProps): React.
             labelStyle={{ fontSize: 12 }}
             compact
           >
-            {r.emoji} {t(r.labelKey as Parameters<typeof t>[0]).split(' ')[1] ?? ''}
+            {r.emoji} {t(r.labelKey as Parameters<typeof t>[0])}
           </Button>
         );
       })}
