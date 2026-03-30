@@ -1,0 +1,100 @@
+{
+  "navigation": {
+    "products": "Продукти",
+    "statistics": "Статистика",
+    "settings": "Налаштування"
+  },
+  "products": {
+    "title": "100 Перших Продуктів",
+    "search": "Пошук продуктів...",
+    "categories": "Категорії",
+    "filters": {
+      "all": "Всі",
+      "tried": "Спробовано",
+      "notTried": "Не спробовано",
+      "favorites": "Улюблені"
+    },
+    "addProduct": "Додати продукт",
+    "noProducts": "Продуктів не знайдено"
+  },
+  "product": {
+    "tried": "Спробовано",
+    "notTried": "Не спробовано",
+    "firstTried": "Вперше спробовано",
+    "rating": {
+      "liked": "Сподобалось 😍",
+      "neutral": "Нейтрально 😐",
+      "disliked": "Не сподобалось 😞"
+    },
+    "favorite": "Улюблений",
+    "reactionNotes": "Нотатки про реакцію/алергію",
+    "notes": "Нотатки",
+    "save": "Зберегти",
+    "delete": "Видалити",
+    "deleteConfirm": "Ви впевнені, що хочете видалити цей продукт?"
+  },
+  "addProduct": {
+    "title": "Додати продукт",
+    "nameUk": "Назва (Українська)",
+    "nameEn": "Назва (Англійська)",
+    "category": "Категорія",
+    "notes": "Нотатки",
+    "save": "Зберегти"
+  },
+  "statistics": {
+    "title": "Статистика",
+    "overallProgress": "Загальний прогрес",
+    "totalTried": "Спробовано",
+    "customProducts": "Свої продукти",
+    "favorites": "Улюблені",
+    "ratingBreakdown": "Розподіл оцінок",
+    "categoryBreakdown": "За категоріями",
+    "recentlyTried": "Нещодавно спробовані"
+  },
+  "settings": {
+    "title": "Налаштування",
+    "language": "Мова",
+    "theme": {
+      "title": "Тема",
+      "light": "Світла",
+      "dark": "Темна",
+      "system": "Системна"
+    },
+    "dataManagement": {
+      "title": "Управління даними",
+      "export": "Експортувати дані",
+      "import": "Імпортувати дані",
+      "reset": "Скинути прогрес",
+      "resetConfirm": "Ви впевнені? Весь прогрес буде видалено."
+    },
+    "sync": {
+      "title": "Синхронізація",
+      "apiUrl": "URL API",
+      "syncNow": "Синхронізувати зараз",
+      "lastSynced": "Остання синхронізація"
+    },
+    "about": {
+      "title": "Про додаток",
+      "version": "Версія",
+      "github": "GitHub"
+    }
+  },
+  "categories": {
+    "vegetables": "Овочі та зелень",
+    "fruits": "Фрукти",
+    "dairy": "Молочні продукти",
+    "meat": "М'ясо та тваринні продукти",
+    "grains": "Крупи та бобові",
+    "nutsSeeds": "Горіхи та насіння",
+    "fish": "Риба та морепродукти"
+  },
+  "errors": {
+    "generic": "Щось пішло не так",
+    "loadFailed": "Помилка завантаження",
+    "saveFailed": "Помилка збереження"
+  },
+  "confirmDialog": {
+    "cancel": "Скасувати",
+    "confirm": "Підтвердити"
+  }
+}
