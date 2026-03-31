@@ -72,17 +72,12 @@ export function ProductItem({
       <View style={styles.content}>
         <View style={styles.nameRow}>
           <Text
-            style={[
-              styles.name,
-              { color: product.tried ? '#374151' : '#1f2937' },
-            ]}
+            style={[styles.name, { color: product.tried ? '#374151' : '#1f2937' }]}
             numberOfLines={1}
           >
             {name}
           </Text>
-          {product.reactionNotes ? (
-            <Text style={styles.warningBadge}>⚠️</Text>
-          ) : null}
+          {product.reactionNotes ? <Text style={styles.warningBadge}>⚠️</Text> : null}
         </View>
 
         <View style={styles.meta}>
@@ -106,10 +101,7 @@ export function ProductItem({
           onPress={() => {
             onPress({ ...product, favorite: !product.favorite });
           }}
-          style={[
-            styles.heartButton,
-            product.favorite && styles.heartButtonActive,
-          ]}
+          style={[styles.heartButton, product.favorite && styles.heartButtonActive]}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <MaterialCommunityIcons

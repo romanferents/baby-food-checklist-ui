@@ -93,7 +93,12 @@ export default function ProductDetailScreen(): React.JSX.Element {
       </View>
 
       {/* Category badge */}
-      <View style={[styles.categoryBadge, { backgroundColor: meta.bgColor, borderColor: meta.borderColor }]}>
+      <View
+        style={[
+          styles.categoryBadge,
+          { backgroundColor: meta.bgColor, borderColor: meta.borderColor },
+        ]}
+      >
         <Text style={styles.categoryEmoji}>{meta.emoji}</Text>
         <Text style={[styles.categoryName, { color: meta.color }]}>
           {t(`categories.${product.category}`)}
@@ -124,9 +129,7 @@ export default function ProductDetailScreen(): React.JSX.Element {
               {product.tried ? t('product.tried') : t('product.notTried')}
             </Text>
             {product.tried && product.firstTriedDate && (
-              <Text style={styles.triedDate}>
-                📅 {formatDate(product.firstTriedDate, lang)}
-              </Text>
+              <Text style={styles.triedDate}>📅 {formatDate(product.firstTriedDate, lang)}</Text>
             )}
           </View>
         </View>
@@ -149,9 +152,14 @@ export default function ProductDetailScreen(): React.JSX.Element {
               placeholderTextColor="#9ca3af"
               value={product.firstTriedDate ? product.firstTriedDate.split('T')[0] : ''}
               onChangeText={(text) => {
-                updateProduct(product.id, { firstTriedDate: text ? new Date(text).toISOString() : undefined });
+                updateProduct(product.id, {
+                  firstTriedDate: text ? new Date(text).toISOString() : undefined,
+                });
               }}
-              style={[styles.dateInput, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+              style={[
+                styles.dateInput,
+                { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+              ]}
             />
           </View>
 
@@ -173,7 +181,10 @@ export default function ProductDetailScreen(): React.JSX.Element {
           onChangeText={handleReactionNotesChange}
           multiline
           numberOfLines={3}
-          style={[styles.textArea, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+          style={[
+            styles.textArea,
+            { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+          ]}
           textAlignVertical="top"
         />
       </View>
@@ -188,7 +199,10 @@ export default function ProductDetailScreen(): React.JSX.Element {
           onChangeText={handleNotesChange}
           multiline
           numberOfLines={3}
-          style={[styles.textArea, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+          style={[
+            styles.textArea,
+            { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+          ]}
           textAlignVertical="top"
         />
       </View>

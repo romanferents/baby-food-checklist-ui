@@ -9,10 +9,34 @@ interface RatingSelectorProps {
   onChange: (rating: ProductRating | undefined) => void;
 }
 
-const RATINGS: { value: ProductRating; emoji: string; labelKey: string; color: string; bg: string }[] = [
-  { value: 'liked', emoji: '😍', labelKey: 'product.rating.likedText', color: '#16a34a', bg: '#dcfce7' },
-  { value: 'neutral', emoji: '😐', labelKey: 'product.rating.neutralText', color: '#d97706', bg: '#fef3c7' },
-  { value: 'disliked', emoji: '😣', labelKey: 'product.rating.dislikedText', color: '#dc2626', bg: '#fee2e2' },
+const RATINGS: {
+  value: ProductRating;
+  emoji: string;
+  labelKey: string;
+  color: string;
+  bg: string;
+}[] = [
+  {
+    value: 'liked',
+    emoji: '😍',
+    labelKey: 'product.rating.likedText',
+    color: '#16a34a',
+    bg: '#dcfce7',
+  },
+  {
+    value: 'neutral',
+    emoji: '😐',
+    labelKey: 'product.rating.neutralText',
+    color: '#d97706',
+    bg: '#fef3c7',
+  },
+  {
+    value: 'disliked',
+    emoji: '😣',
+    labelKey: 'product.rating.dislikedText',
+    color: '#dc2626',
+    bg: '#fee2e2',
+  },
 ];
 
 export function RatingSelector({ value, onChange }: RatingSelectorProps): React.JSX.Element {
@@ -36,9 +60,7 @@ export function RatingSelector({ value, onChange }: RatingSelectorProps): React.
             activeOpacity={0.7}
           >
             <Text style={styles.emoji}>{r.emoji}</Text>
-            <Text
-              style={[styles.label, { color: selected ? r.color : '#6b7280' }]}
-            >
+            <Text style={[styles.label, { color: selected ? r.color : '#6b7280' }]}>
               {t(r.labelKey as Parameters<typeof t>[0])}
             </Text>
           </TouchableOpacity>

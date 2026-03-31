@@ -32,13 +32,7 @@ export function CategoryChip({
       activeOpacity={0.7}
     >
       <Text style={styles.emoji}>{meta.emoji}</Text>
-      <Text
-        style={[
-          styles.label,
-          { color: selected ? '#fff' : meta.color },
-        ]}
-        numberOfLines={1}
-      >
+      <Text style={[styles.label, { color: selected ? '#fff' : meta.color }]} numberOfLines={1}>
         {t(`categories.${category}`)}
       </Text>
     </TouchableOpacity>

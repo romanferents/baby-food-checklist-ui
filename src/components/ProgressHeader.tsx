@@ -69,7 +69,10 @@ export function ProgressHeader({ tried, total }: ProgressHeaderProps): React.JSX
         <View style={styles.numbersContainer}>
           <Text style={styles.triedCount}>
             {tried}
-            <Text style={styles.ofTotal}> {t('statistics.of') ?? 'of'} {total}</Text>
+            <Text style={styles.ofTotal}>
+              {' '}
+              {t('statistics.of') ?? 'of'} {total}
+            </Text>
           </Text>
           <Text style={styles.triedLabel}>{t('statistics.totalTried').toLowerCase()}</Text>
           {/* Progress bar */}

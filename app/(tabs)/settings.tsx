@@ -67,7 +67,10 @@ export default function SettingsScreen(): React.JSX.Element {
               placeholderTextColor="#9ca3af"
               value={babyInfo.name}
               onChangeText={(text) => setBabyInfo({ name: text })}
-              style={[styles.textInput, { color: theme.colors.onSurface, backgroundColor: '#f9fafb' }]}
+              style={[
+                styles.textInput,
+                { color: theme.colors.onSurface, backgroundColor: '#f9fafb' },
+              ]}
             />
           </View>
           <View style={styles.divider} />
@@ -78,7 +81,10 @@ export default function SettingsScreen(): React.JSX.Element {
               placeholderTextColor="#9ca3af"
               value={babyInfo.birthDate}
               onChangeText={(text) => setBabyInfo({ birthDate: text })}
-              style={[styles.textInput, { color: theme.colors.onSurface, backgroundColor: '#f9fafb' }]}
+              style={[
+                styles.textInput,
+                { color: theme.colors.onSurface, backgroundColor: '#f9fafb' },
+              ]}
             />
           </View>
           <View style={styles.divider} />
@@ -89,7 +95,10 @@ export default function SettingsScreen(): React.JSX.Element {
               placeholderTextColor="#9ca3af"
               value={babyInfo.complementaryStart}
               onChangeText={(text) => setBabyInfo({ complementaryStart: text })}
-              style={[styles.textInput, { color: theme.colors.onSurface, backgroundColor: '#f9fafb' }]}
+              style={[
+                styles.textInput,
+                { color: theme.colors.onSurface, backgroundColor: '#f9fafb' },
+              ]}
             />
           </View>
           <View style={styles.divider} />
@@ -101,18 +110,23 @@ export default function SettingsScreen(): React.JSX.Element {
               value={babyInfo.weight}
               onChangeText={(text) => setBabyInfo({ weight: text })}
               keyboardType="numeric"
-              style={[styles.textInput, { color: theme.colors.onSurface, backgroundColor: '#f9fafb' }]}
+              style={[
+                styles.textInput,
+                { color: theme.colors.onSurface, backgroundColor: '#f9fafb' },
+              ]}
             />
           </View>
 
           {/* Baby info preview card */}
-          {(babyInfo.name || babyInfo.complementaryStart) ? (
+          {babyInfo.name || babyInfo.complementaryStart ? (
             <>
               <View style={styles.divider} />
               <View style={styles.babyPreview}>
                 <Text style={styles.babyPreviewEmoji}>👶</Text>
                 <View style={styles.babyPreviewInfo}>
-                  {babyInfo.name ? <Text style={styles.babyPreviewName}>{babyInfo.name}</Text> : null}
+                  {babyInfo.name ? (
+                    <Text style={styles.babyPreviewName}>{babyInfo.name}</Text>
+                  ) : null}
                   {babyInfo.complementaryStart ? (
                     <Text style={styles.babyPreviewDetail}>
                       🍽 {t('settings.babyInfo.complementaryStart')}: {babyInfo.complementaryStart}

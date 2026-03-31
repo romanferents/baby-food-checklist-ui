@@ -73,7 +73,10 @@ export default function AddProductScreen(): React.JSX.Element {
           placeholderTextColor="#9ca3af"
           value={nameUk}
           onChangeText={setNameUk}
-          style={[styles.input, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+          style={[
+            styles.input,
+            { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+          ]}
         />
       </View>
 
@@ -84,7 +87,10 @@ export default function AddProductScreen(): React.JSX.Element {
           placeholderTextColor="#9ca3af"
           value={nameEn}
           onChangeText={setNameEn}
-          style={[styles.input, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+          style={[
+            styles.input,
+            { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+          ]}
         />
       </View>
 
@@ -111,10 +117,7 @@ export default function AddProductScreen(): React.JSX.Element {
               >
                 <Text style={styles.categoryEmoji}>{meta.emoji}</Text>
                 <Text
-                  style={[
-                    styles.categoryText,
-                    { color: isSelected ? meta.color : '#6b7280' },
-                  ]}
+                  style={[styles.categoryText, { color: isSelected ? meta.color : '#6b7280' }]}
                   numberOfLines={1}
                 >
                   {t(`categories.${cat}`)}

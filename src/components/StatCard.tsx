@@ -11,7 +11,13 @@ interface StatCardProps {
   bgColor?: string;
 }
 
-export function StatCard({ label, value, emoji, color, bgColor }: StatCardProps): React.JSX.Element {
+export function StatCard({
+  label,
+  value,
+  emoji,
+  color,
+  bgColor,
+}: StatCardProps): React.JSX.Element {
   return (
     <View style={[styles.card, { backgroundColor: bgColor ?? '#f8f9fa' }]}>
       {emoji && <Text style={styles.emoji}>{emoji}</Text>}

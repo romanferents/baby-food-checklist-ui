@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, LayoutAnimation, Platform, UIManager } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import { Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -44,9 +51,7 @@ export function CategorySection({
         <View style={styles.headerLeft}>
           <Text style={styles.emoji}>{meta.emoji}</Text>
           <View>
-            <Text style={[styles.title, { color: meta.color }]}>
-              {t(`categories.${category}`)}
-            </Text>
+            <Text style={[styles.title, { color: meta.color }]}>{t(`categories.${category}`)}</Text>
             <Text style={styles.subtitle}>
               {tried}/{total} ({pct}%)
             </Text>
@@ -55,9 +60,7 @@ export function CategorySection({
         <View style={styles.headerRight}>
           {/* Mini progress bar */}
           <View style={[styles.miniBarTrack, { backgroundColor: meta.borderColor }]}>
-            <View
-              style={[styles.miniBarFill, { width: `${pct}%`, backgroundColor: meta.color }]}
-            />
+            <View style={[styles.miniBarFill, { width: `${pct}%`, backgroundColor: meta.color }]} />
           </View>
           <MaterialCommunityIcons
             name={isOpen ? 'chevron-up' : 'chevron-down'}

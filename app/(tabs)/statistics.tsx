@@ -19,7 +19,8 @@ export default function StatisticsScreen(): React.JSX.Element {
   const router = useRouter();
   const allProducts = useProductsStore((s) => s.products);
   const { updateProduct } = useProductActions();
-  const progressPct = stats.totalProducts > 0 ? Math.round((stats.triedProducts / stats.totalProducts) * 100) : 0;
+  const progressPct =
+    stats.totalProducts > 0 ? Math.round((stats.triedProducts / stats.totalProducts) * 100) : 0;
 
   const handleProductPress = (product: Product) => {
     router.push(`/product/${product.id}`);
@@ -33,9 +34,7 @@ export default function StatisticsScreen(): React.JSX.Element {
   };
 
   // Most liked products
-  const mostLiked = allProducts
-    .filter((p) => p.rating === 'liked' && p.tried)
-    .slice(0, 5);
+  const mostLiked = allProducts.filter((p) => p.rating === 'liked' && p.tried).slice(0, 5);
 
   return (
     <ScrollView
@@ -56,7 +55,11 @@ export default function StatisticsScreen(): React.JSX.Element {
         <View style={styles.headerStatGrid}>
           {[
             { icon: '✅', value: stats.triedProducts, label: t('statistics.totalTried') },
-            { icon: '⏳', value: stats.totalProducts - stats.triedProducts, label: t('statistics.remaining') || 'Remaining' },
+            {
+              icon: '⏳',
+              value: stats.totalProducts - stats.triedProducts,
+              label: t('statistics.remaining') || 'Remaining',
+            },
             { icon: '😍', value: stats.liked, label: t('product.rating.likedText') },
             { icon: '❤️', value: stats.favorites, label: t('statistics.favorites') },
           ].map((item, i) => (
@@ -109,7 +112,9 @@ export default function StatisticsScreen(): React.JSX.Element {
       )}
 
       {/* Category breakdown */}
-      <Text style={[styles.sectionTitleFull, { marginTop: 16 }]}>📋 {t('statistics.categoryBreakdown')}</Text>
+      <Text style={[styles.sectionTitleFull, { marginTop: 16 }]}>
+        📋 {t('statistics.categoryBreakdown')}
+      </Text>
       {stats.categoryStats
         .filter((cs) => cs.total > 0)
         .map((cs) => {
@@ -132,7 +137,9 @@ export default function StatisticsScreen(): React.JSX.Element {
                     ]}
                   />
                 </View>
-                <Text style={styles.catCount}>{cs.tried}/{cs.total}</Text>
+                <Text style={styles.catCount}>
+                  {cs.tried}/{cs.total}
+                </Text>
               </View>
             </View>
           );
@@ -141,7 +148,9 @@ export default function StatisticsScreen(): React.JSX.Element {
       {/* Most liked */}
       {mostLiked.length > 0 && (
         <>
-          <Text style={[styles.sectionTitleFull, { marginTop: 16 }]}>😍 {t('statistics.favorites')}</Text>
+          <Text style={[styles.sectionTitleFull, { marginTop: 16 }]}>
+            😍 {t('statistics.favorites')}
+          </Text>
           {mostLiked.map((p) => (
             <ProductItem
               key={p.id}
@@ -156,7 +165,9 @@ export default function StatisticsScreen(): React.JSX.Element {
       {/* Recently tried */}
       {stats.recentlyTried.length > 0 && (
         <>
-          <Text style={[styles.sectionTitleFull, { marginTop: 16 }]}>🕐 {t('statistics.recentlyTried')}</Text>
+          <Text style={[styles.sectionTitleFull, { marginTop: 16 }]}>
+            🕐 {t('statistics.recentlyTried')}
+          </Text>
           {stats.recentlyTried.map((p) => (
             <ProductItem
               key={p.id}

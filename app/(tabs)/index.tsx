@@ -68,7 +68,7 @@ export default function ProductsScreen(): React.JSX.Element {
     (product: Product) => {
       if (product.favorite !== undefined && product.id) {
         // Check if this was a favorite toggle from ProductItem
-        const existingProduct = allProducts.find(p => p.id === product.id);
+        const existingProduct = allProducts.find((p) => p.id === product.id);
         if (existingProduct && existingProduct.favorite !== product.favorite) {
           updateProduct(product.id, { favorite: product.favorite });
           return;
@@ -131,7 +131,9 @@ export default function ProductsScreen(): React.JSX.Element {
               style={[styles.filterPill, styles.filterPillInactive, { borderColor: '#e5e7eb' }]}
             >
               <Text style={styles.filterEmoji}>{FILTER_EMOJIS[f]}</Text>
-              <Text style={[styles.filterLabel, { color: '#6b7280' }]}>{t(`products.filters.${f}`)}</Text>
+              <Text style={[styles.filterLabel, { color: '#6b7280' }]}>
+                {t(`products.filters.${f}`)}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -153,7 +155,15 @@ export default function ProductsScreen(): React.JSX.Element {
             size={14}
             color={selectedCategory ? '#4338ca' : '#6b7280'}
           />
-          <Text style={[styles.filterLabel, { color: selectedCategory ? '#4338ca' : '#6b7280', fontWeight: selectedCategory ? '700' : '500' }]}>
+          <Text
+            style={[
+              styles.filterLabel,
+              {
+                color: selectedCategory ? '#4338ca' : '#6b7280',
+                fontWeight: selectedCategory ? '700' : '500',
+              },
+            ]}
+          >
             {t('settings.allCategories')}
           </Text>
         </TouchableOpacity>
