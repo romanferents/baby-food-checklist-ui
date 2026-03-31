@@ -1,38 +1,31 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, Surface, useTheme } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { spacing } from '../theme/spacing';
+import { Text } from 'react-native-paper';
 
 interface StatCardProps {
   label: string;
   value: number | string;
-  icon: string;
+  emoji?: string;
+  icon?: string;
   color?: string;
+  bgColor?: string;
 }
 
-export function StatCard({ label, value, icon, color }: StatCardProps): React.JSX.Element {
-  const theme = useTheme();
-  const iconColor = color ?? theme.colors.primary;
-
+export function StatCard({
+  label,
+  value,
+  emoji,
+  color,
+  bgColor,
+}: StatCardProps): React.JSX.Element {
   return (
-    <Surface style={[styles.card, { backgroundColor: theme.colors.surface }]} elevation={1}>
-      <MaterialCommunityIcons
-        name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
-        size={28}
-        color={iconColor}
-      />
-      <Text variant="headlineSmall" style={[styles.value, { color: iconColor }]}>
-        {value}
-      </Text>
-      <Text
-        variant="bodySmall"
-        style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}
-        numberOfLines={2}
-      >
+    <View style={[styles.card, { backgroundColor: bgColor ?? '#f8f9fa' }]}>
+      {emoji && <Text style={styles.emoji}>{emoji}</Text>}
+      <Text style={[styles.value, { color: color ?? '#374151' }]}>{value}</Text>
+      <Text style={styles.label} numberOfLines={2}>
         {label}
       </Text>
-    </Surface>
+    </View>
   );
 }
 
@@ -40,12 +33,22 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: 12,
-    gap: spacing.xs,
+    padding: 14,
+    borderRadius: 14,
+    gap: 4,
     minWidth: 80,
   },
+  emoji: {
+    fontSize: 24,
+  },
   value: {
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '800',
+  },
+  label: {
+    fontSize: 11,
+    color: '#9ca3af',
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

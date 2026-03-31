@@ -1,8 +1,10 @@
-import React, { useCallback } from 'react';
-import { View, ScrollView, StyleSheet, FlatList } from 'react-native';
-import { Searchbar, FAB, Chip, useTheme, Text } from 'react-native-paper';
+import React, { useCallback, useState } from 'react';
+import { View, ScrollView, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { useTheme, Text } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useProducts, useProductActions } from '../../src/features/products/products.hooks';
 import { useProductsStore } from '../../src/features/products/products.store';
 import { ProductItem } from '../../src/components/ProductItem';
@@ -14,11 +16,17 @@ import { useDebounce } from '../../src/hooks/useDebounce';
 import { getProductsByCategory, getAppStats } from '../../src/features/products/products.selectors';
 import { CATEGORY_ORDER } from '../../src/utils/categories';
 import { Product } from '../../src/features/products/types';
-import { spacing } from '../../src/theme/spacing';
 import { FilterType } from '../../src/features/products/types';
 import { DEBOUNCE_DELAY_MS } from '../../src/constants';
 
 const FILTER_KEYS: FilterType[] = ['all', 'tried', 'notTried', 'favorites'];
+
+const FILTER_EMOJIS: Record<FilterType, string> = {
+  all: '📋',
+  tried: '✅',
+  notTried: '🆕',
+  favorites: '❤️',
+};
 
 export default function ProductsScreen(): React.JSX.Element {
   const { t } = useTranslation();
@@ -32,6 +40,7 @@ export default function ProductsScreen(): React.JSX.Element {
 
   const { setSearchQuery, setFilter, setSelectedCategory, updateProduct } = useProductActions();
   const debouncedSearch = useDebounce(rawSearchQuery, DEBOUNCE_DELAY_MS);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
 
   const stats = getAppStats(allProducts);
   const filteredProducts = useProducts();
@@ -57,60 +66,132 @@ export default function ProductsScreen(): React.JSX.Element {
 
   const handleProductPress = useCallback(
     (product: Product) => {
+      if (product.favorite !== undefined && product.id) {
+        // Check if this was a favorite toggle from ProductItem
+        const existingProduct = allProducts.find((p) => p.id === product.id);
+        if (existingProduct && existingProduct.favorite !== product.favorite) {
+          updateProduct(product.id, { favorite: product.favorite });
+          return;
+        }
+      }
       router.push(`/product/${product.id}`);
     },
-    [router],
+    [router, allProducts, updateProduct],
   );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ProgressHeader tried={stats.triedProducts} total={stats.totalProducts} />
 
+      {/* Search */}
       <View style={styles.searchContainer}>
-        <Searchbar
-          placeholder={t('products.search')}
-          onChangeText={setSearchQuery}
-          value={rawSearchQuery}
-          style={{ backgroundColor: theme.colors.surfaceVariant }}
-          inputStyle={{ color: theme.colors.onSurface }}
-        />
+        <View style={[styles.searchBar, { backgroundColor: theme.colors.surface }]}>
+          <MaterialCommunityIcons name="magnify" size={20} color="#9ca3af" />
+          <TextInput
+            placeholder={t('products.search')}
+            placeholderTextColor="#9ca3af"
+            onChangeText={setSearchQuery}
+            value={rawSearchQuery}
+            style={[styles.searchInput, { color: theme.colors.onSurface }]}
+          />
+          {rawSearchQuery ? (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <MaterialCommunityIcons name="close-circle" size={18} color="#9ca3af" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.chipsRow}
-        contentContainerStyle={styles.chipsContent}
-      >
-        {CATEGORY_ORDER.map((cat) => (
-          <CategoryChip
-            key={cat}
-            category={cat}
-            selected={selectedCategory === cat}
-            onPress={setSelectedCategory}
-          />
-        ))}
-      </ScrollView>
-
+      {/* Filter pills */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.filtersRow}
         contentContainerStyle={styles.filtersContent}
       >
-        {FILTER_KEYS.map((f) => (
-          <Chip
-            key={f}
-            selected={filter === f}
-            onPress={() => setFilter(f)}
-            style={styles.filterChip}
-            mode={filter === f ? 'flat' : 'outlined'}
+        {FILTER_KEYS.map((f) => {
+          const isActive = filter === f;
+          return isActive ? (
+            <LinearGradient
+              key={f}
+              colors={['#ff8c69', '#ffb347']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.filterPill}
+            >
+              <TouchableOpacity onPress={() => setFilter(f)} style={styles.filterPillInner}>
+                <Text style={styles.filterEmoji}>{FILTER_EMOJIS[f]}</Text>
+                <Text style={styles.filterLabelActive}>{t(`products.filters.${f}`)}</Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          ) : (
+            <TouchableOpacity
+              key={f}
+              onPress={() => setFilter(f)}
+              style={[styles.filterPill, styles.filterPillInactive, { borderColor: '#e5e7eb' }]}
+            >
+              <Text style={styles.filterEmoji}>{FILTER_EMOJIS[f]}</Text>
+              <Text style={[styles.filterLabel, { color: '#6b7280' }]}>
+                {t(`products.filters.${f}`)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+
+        {/* Category filter toggle */}
+        <TouchableOpacity
+          onPress={() => setShowCategoryFilter(!showCategoryFilter)}
+          style={[
+            styles.filterPill,
+            styles.filterPillInactive,
+            {
+              borderColor: selectedCategory ? '#4338ca' : '#e5e7eb',
+              backgroundColor: selectedCategory ? '#e0e7ff' : 'transparent',
+            },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name="tune-variant"
+            size={14}
+            color={selectedCategory ? '#4338ca' : '#6b7280'}
+          />
+          <Text
+            style={[
+              styles.filterLabel,
+              {
+                color: selectedCategory ? '#4338ca' : '#6b7280',
+                fontWeight: selectedCategory ? '700' : '500',
+              },
+            ]}
           >
-            {t(`products.filters.${f}`)}
-          </Chip>
-        ))}
+            {t('settings.allCategories')}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
 
+      {/* Category chips - toggled by filter button */}
+      {showCategoryFilter && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.chipsRow}
+          contentContainerStyle={styles.chipsContent}
+        >
+          {CATEGORY_ORDER.map((cat) => (
+            <CategoryChip
+              key={cat}
+              category={cat}
+              selected={selectedCategory === cat}
+              onPress={(c) => {
+                setSelectedCategory(c);
+                if (c === null) setShowCategoryFilter(false);
+              }}
+            />
+          ))}
+        </ScrollView>
+      )}
+
+      {/* Product list */}
       <FlatList
         data={CATEGORY_ORDER.filter((cat) => (productsByCategory[cat]?.length ?? 0) > 0)}
         keyExtractor={(cat) => cat}
@@ -134,14 +215,24 @@ export default function ProductsScreen(): React.JSX.Element {
           );
         }}
         ListEmptyComponent={<EmptyState icon="food-off" title={t('products.noProducts')} />}
+        contentContainerStyle={styles.listContent}
       />
 
-      <FAB
-        icon="plus"
-        style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-        color={theme.colors.onPrimary}
+      {/* FAB */}
+      <TouchableOpacity
+        style={styles.fabContainer}
         onPress={() => router.push('/add-product')}
-      />
+        activeOpacity={0.8}
+      >
+        <LinearGradient
+          colors={['#ff8c69', '#ffb347']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fab}
+        >
+          <MaterialCommunityIcons name="plus" size={28} color="white" />
+        </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -151,33 +242,95 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   searchContainer: {
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
-  chipsRow: {
-    flexGrow: 0,
-    marginBottom: spacing.xs,
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    gap: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
   },
-  chipsContent: {
-    paddingHorizontal: spacing.md,
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    padding: 0,
   },
   filtersRow: {
     flexGrow: 0,
-    marginBottom: spacing.sm,
+    marginBottom: 4,
   },
   filtersContent: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.xs,
+    paddingHorizontal: 16,
+    gap: 8,
   },
-  filterChip: {
-    marginRight: spacing.xs,
+  filterPill: {
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  filterPillInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    gap: 6,
+  },
+  filterPillInactive: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderWidth: 1,
+    gap: 6,
+  },
+  filterEmoji: {
+    fontSize: 14,
+  },
+  filterLabelActive: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'white',
+  },
+  filterLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  chipsRow: {
+    flexGrow: 0,
+    marginBottom: 8,
+  },
+  chipsContent: {
+    paddingHorizontal: 16,
   },
   list: {
     flex: 1,
   },
-  fab: {
+  listContent: {
+    paddingBottom: 80,
+  },
+  fabContainer: {
     position: 'absolute',
-    right: spacing.md,
-    bottom: spacing.lg,
+    right: 20,
+    bottom: 24,
+    shadowColor: '#ff8c69',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  fab: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

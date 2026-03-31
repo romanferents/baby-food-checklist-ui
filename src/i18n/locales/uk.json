@@ -53,7 +53,8 @@
     "favorites": "Улюблені",
     "ratingBreakdown": "Розподіл оцінок",
     "categoryBreakdown": "За категоріями",
-    "recentlyTried": "Нещодавно спробовані"
+    "recentlyTried": "Нещодавно спробовані",
+    "of": "з"
   },
   "settings": {
     "title": "Налаштування",
@@ -81,7 +82,17 @@
       "title": "Про додаток",
       "version": "Версія",
       "github": "GitHub"
-    }
+    },
+    "babyInfo": {
+      "title": "Інформація про дитину",
+      "name": "Ім'я дитини",
+      "namePlaceholder": "Наприклад: Олівія",
+      "birthDate": "Дата народження",
+      "complementaryStart": "Початок прикорму",
+      "weight": "Початкова вага (кг)",
+      "weightPlaceholder": "8.0"
+    },
+    "allCategories": "Всі категорії"
   },
   "categories": {
     "vegetables": "Овочі та зелень",
@@ -90,7 +101,8 @@
     "meat": "М'ясо та тваринні продукти",
     "grains": "Крупи та бобові",
     "nutsSeeds": "Горіхи та насіння",
-    "fish": "Риба та морепродукти"
+    "fish": "Риба та морепродукти",
+    "spices": "Спеції та олії"
   },
   "errors": {
     "generic": "Щось пішло не так",

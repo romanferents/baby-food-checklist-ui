@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Text, TextInput, Button, SegmentedButtons, useTheme } from 'react-native-paper';
+import { ScrollView, StyleSheet, View, TouchableOpacity, TextInput } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useProductActions } from '../src/features/products/products.hooks';
 import { Product, ProductCategory } from '../src/features/products/types';
-import { CATEGORY_ORDER } from '../src/utils/categories';
-import { spacing } from '../src/theme/spacing';
+import { CATEGORY_ORDER, CATEGORY_META } from '../src/utils/categories';
 import { MAX_CUSTOM_PRODUCTS } from '../src/constants';
 import { useProductsStore } from '../src/features/products/products.store';
 
@@ -25,10 +26,7 @@ export default function AddProductScreen(): React.JSX.Element {
 
   const handleSave = () => {
     if (!nameUk.trim()) return;
-
-    if (customCount >= MAX_CUSTOM_PRODUCTS) {
-      return;
-    }
+    if (customCount >= MAX_CUSTOM_PRODUCTS) return;
 
     const now = new Date().toISOString();
     const id = `custom_${Date.now()}`;
@@ -50,67 +48,122 @@ export default function AddProductScreen(): React.JSX.Element {
     router.back();
   };
 
+  const selectedMeta = CATEGORY_META[category];
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       contentContainerStyle={styles.content}
     >
-      <Text variant="headlineMedium" style={[styles.heading, { color: theme.colors.onBackground }]}>
-        {t('addProduct.title')}
-      </Text>
-
-      <TextInput
-        label={t('addProduct.nameUk')}
-        value={nameUk}
-        onChangeText={setNameUk}
-        mode="outlined"
-        style={styles.input}
-      />
-
-      <TextInput
-        label={t('addProduct.nameEn')}
-        value={nameEn}
-        onChangeText={setNameEn}
-        mode="outlined"
-        style={styles.input}
-      />
-
-      <Text variant="labelLarge" style={[styles.label, { color: theme.colors.onSurfaceVariant }]}>
-        {t('addProduct.category')}
-      </Text>
-
-      <View style={styles.categoryGrid}>
-        {CATEGORY_ORDER.map((cat) => (
-          <Button
-            key={cat}
-            mode={category === cat ? 'contained' : 'outlined'}
-            onPress={() => setCategory(cat)}
-            style={styles.catButton}
-            compact
-          >
-            {t(`categories.${cat}`)}
-          </Button>
-        ))}
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
+        </TouchableOpacity>
+        <Text style={[styles.heading, { color: theme.colors.onBackground }]}>
+          ✨ {t('addProduct.title')}
+        </Text>
       </View>
 
-      <TextInput
-        label={t('addProduct.notes')}
-        value={notes}
-        onChangeText={setNotes}
-        mode="outlined"
-        multiline
-        numberOfLines={3}
-        style={styles.input}
-      />
+      {/* Name inputs */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>🇺🇦 {t('addProduct.nameUk')}</Text>
+        <TextInput
+          placeholder={t('addProduct.nameUk')}
+          placeholderTextColor="#9ca3af"
+          value={nameUk}
+          onChangeText={setNameUk}
+          style={[
+            styles.input,
+            { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+          ]}
+        />
+      </View>
 
-      <Button
-        mode="contained"
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>🇬🇧 {t('addProduct.nameEn')}</Text>
+        <TextInput
+          placeholder={t('addProduct.nameEn')}
+          placeholderTextColor="#9ca3af"
+          value={nameEn}
+          onChangeText={setNameEn}
+          style={[
+            styles.input,
+            { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+          ]}
+        />
+      </View>
+
+      {/* Category grid */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>📂 {t('addProduct.category')}</Text>
+        <View style={styles.categoryGrid}>
+          {CATEGORY_ORDER.map((cat) => {
+            const meta = CATEGORY_META[cat];
+            const isSelected = category === cat;
+            return (
+              <TouchableOpacity
+                key={cat}
+                style={[
+                  styles.categoryCard,
+                  {
+                    backgroundColor: isSelected ? meta.bgColor : theme.colors.surface,
+                    borderColor: isSelected ? meta.color : '#e5e7eb',
+                    borderWidth: isSelected ? 2 : 1,
+                  },
+                ]}
+                onPress={() => setCategory(cat)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.categoryEmoji}>{meta.emoji}</Text>
+                <Text
+                  style={[styles.categoryText, { color: isSelected ? meta.color : '#6b7280' }]}
+                  numberOfLines={1}
+                >
+                  {t(`categories.${cat}`)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Notes */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>📝 {t('addProduct.notes')}</Text>
+        <TextInput
+          placeholder={t('addProduct.notes')}
+          placeholderTextColor="#9ca3af"
+          value={notes}
+          onChangeText={setNotes}
+          multiline
+          numberOfLines={3}
+          style={[
+            styles.input,
+            styles.textArea,
+            { backgroundColor: theme.colors.surface, color: theme.colors.onSurface },
+          ]}
+          textAlignVertical="top"
+        />
+      </View>
+
+      {/* Save button */}
+      <TouchableOpacity
         onPress={handleSave}
         disabled={!nameUk.trim()}
-        style={styles.saveButton}
+        activeOpacity={0.8}
+        style={[styles.saveButtonOuter, !nameUk.trim() && { opacity: 0.5 }]}
       >
-        {t('addProduct.save')}
-      </Button>
+        <LinearGradient
+          colors={['#ff8c69', '#ffb347']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.saveButton}
+        >
+          <MaterialCommunityIcons name="check" size={20} color="white" />
+          <Text style={styles.saveButtonText}>{t('addProduct.save')}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -120,29 +173,88 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: spacing.md,
-    paddingBottom: spacing.xxl,
+    padding: 16,
+    paddingBottom: 40,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 24,
+  },
+  backButton: {
+    padding: 4,
   },
   heading: {
-    fontWeight: 'bold',
-    marginBottom: spacing.lg,
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  inputGroup: {
+    marginBottom: 18,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+    marginBottom: 8,
   },
   input: {
-    marginBottom: spacing.md,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
   },
-  label: {
-    marginBottom: spacing.sm,
+  textArea: {
+    minHeight: 80,
+    paddingTop: 12,
   },
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.xs,
-    marginBottom: spacing.md,
+    gap: 10,
   },
-  catButton: {
-    marginBottom: spacing.xs,
+  categoryCard: {
+    width: '30%',
+    flexGrow: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 14,
+    gap: 6,
+  },
+  categoryEmoji: {
+    fontSize: 26,
+  },
+  categoryText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  saveButtonOuter: {
+    marginTop: 8,
+    borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: '#ff8c69',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   saveButton: {
-    marginTop: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    gap: 8,
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: 'white',
   },
 });
