@@ -20,7 +20,11 @@ const RATING_EMOJI: Record<string, string> = {
   disliked: '😞',
 };
 
-export function ProductItem({ product, onPress, onToggleTried }: ProductItemProps): React.JSX.Element {
+export function ProductItem({
+  product,
+  onPress,
+  onToggleTried,
+}: ProductItemProps): React.JSX.Element {
   const theme = useTheme();
   const { i18n } = useTranslation();
   const lang = i18n.language;
@@ -59,9 +63,7 @@ export function ProductItem({ product, onPress, onToggleTried }: ProductItemProp
       </View>
 
       <View style={styles.icons}>
-        {product.rating && (
-          <Text style={styles.emoji}>{RATING_EMOJI[product.rating]}</Text>
-        )}
+        {product.rating && <Text style={styles.emoji}>{RATING_EMOJI[product.rating]}</Text>}
         {product.favorite && (
           <MaterialCommunityIcons name="heart" size={18} color={theme.colors.primary} />
         )}

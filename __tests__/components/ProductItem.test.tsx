@@ -4,6 +4,16 @@ import { PaperProvider } from 'react-native-paper';
 import { ProductItem } from '../../src/components/ProductItem';
 import { Product } from '../../src/features/products/types';
 
+jest.mock('@expo/vector-icons', () => ({
+  MaterialCommunityIcons: 'MaterialCommunityIcons',
+}));
+
+jest.mock('expo-font', () => ({
+  isLoaded: jest.fn(() => true),
+  loadAsync: jest.fn(() => Promise.resolve()),
+  getLoadedFonts: jest.fn(() => []),
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,

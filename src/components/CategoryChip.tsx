@@ -13,7 +13,11 @@ interface CategoryChipProps {
   onPress: (category: ProductCategory | null) => void;
 }
 
-export function CategoryChip({ category, selected, onPress }: CategoryChipProps): React.JSX.Element {
+export function CategoryChip({
+  category,
+  selected,
+  onPress,
+}: CategoryChipProps): React.JSX.Element {
   const theme = useTheme();
   const { t } = useTranslation();
   const color = CATEGORY_COLORS[category];

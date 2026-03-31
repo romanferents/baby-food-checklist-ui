@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import {
-  Text,
-  Switch,
-  TextInput,
-  Button,
-  Divider,
-  Chip,
-  useTheme,
-} from 'react-native-paper';
+import { Text, Switch, TextInput, Button, Divider, Chip, useTheme } from 'react-native-paper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useProductById, useProductActions } from '../../src/features/products/products.hooks';
@@ -152,7 +144,10 @@ export default function ProductDetailScreen(): React.JSX.Element {
       {/* Rating */}
       {product.tried && (
         <View style={styles.section}>
-          <Text variant="labelLarge" style={[styles.label, { color: theme.colors.onSurfaceVariant }]}>
+          <Text
+            variant="labelLarge"
+            style={[styles.label, { color: theme.colors.onSurfaceVariant }]}
+          >
             {t('product.rating.label')}
           </Text>
           <RatingSelector value={product.rating} onChange={handleRatingChange} />

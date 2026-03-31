@@ -121,11 +121,7 @@ export default function ProductsScreen(): React.JSX.Element {
           const triedCount = catAllProducts.filter((p) => p.tried).length;
 
           return (
-            <CategorySection
-              category={category}
-              tried={triedCount}
-              total={catAllProducts.length}
-            >
+            <CategorySection category={category} tried={triedCount} total={catAllProducts.length}>
               {products.map((product) => (
                 <ProductItem
                   key={product.id}
@@ -137,12 +133,7 @@ export default function ProductsScreen(): React.JSX.Element {
             </CategorySection>
           );
         }}
-        ListEmptyComponent={
-          <EmptyState
-            icon="food-off"
-            title={t('products.noProducts')}
-          />
-        }
+        ListEmptyComponent={<EmptyState icon="food-off" title={t('products.noProducts')} />}
       />
 
       <FAB

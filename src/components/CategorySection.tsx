@@ -14,7 +14,12 @@ interface CategorySectionProps {
   children?: React.ReactNode;
 }
 
-export function CategorySection({ category, tried, total, children }: CategorySectionProps): React.JSX.Element {
+export function CategorySection({
+  category,
+  tried,
+  total,
+  children,
+}: CategorySectionProps): React.JSX.Element {
   const theme = useTheme();
   const { t } = useTranslation();
   const color = CATEGORY_COLORS[category];
@@ -30,10 +35,7 @@ export function CategorySection({ category, tried, total, children }: CategorySe
             size={20}
             color={color}
           />
-          <Text
-            variant="titleSmall"
-            style={[styles.title, { color: theme.colors.onSurface }]}
-          >
+          <Text variant="titleSmall" style={[styles.title, { color: theme.colors.onSurface }]}>
             {t(`categories.${category}`)}
           </Text>
         </View>

@@ -32,7 +32,10 @@ export function ProgressHeader({ tried, total }: ProgressHeaderProps): React.JSX
         style={[styles.progressBar, { backgroundColor: theme.colors.surfaceVariant }]}
       />
 
-      <Text variant="bodySmall" style={{ color: theme.colors.onPrimaryContainer, marginTop: spacing.xs }}>
+      <Text
+        variant="bodySmall"
+        style={{ color: theme.colors.onPrimaryContainer, marginTop: spacing.xs }}
+      >
         {tried} / {total} {t('statistics.totalTried').toLowerCase()}
       </Text>
     </View>

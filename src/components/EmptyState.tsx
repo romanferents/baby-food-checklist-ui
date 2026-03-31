@@ -10,7 +10,11 @@ interface EmptyStateProps {
   subtitle?: string;
 }
 
-export function EmptyState({ icon = 'food-off', title, subtitle }: EmptyStateProps): React.JSX.Element {
+export function EmptyState({
+  icon = 'food-off',
+  title,
+  subtitle,
+}: EmptyStateProps): React.JSX.Element {
   const theme = useTheme();
 
   return (

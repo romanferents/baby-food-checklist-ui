@@ -16,9 +16,7 @@ export function getFilteredProducts(
   if (searchQuery.trim()) {
     const q = searchQuery.trim().toLowerCase();
     result = result.filter(
-      (p) =>
-        p.nameUk.toLowerCase().includes(q) ||
-        p.nameEn.toLowerCase().includes(q),
+      (p) => p.nameUk.toLowerCase().includes(q) || p.nameEn.toLowerCase().includes(q),
     );
   }
 
