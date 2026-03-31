@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "matcher": "create_file|replace_string_in_file|multi_replace_string_in_file",
+        "windows": "npx tsc --noEmit --pretty 2>&1 | head -20",
+        "linux": "npx tsc --noEmit --pretty 2>&1 | head -20",
+        "osx": "npx tsc --noEmit --pretty 2>&1 | head -20",
+        "timeout": 30
+      }
+    ]
+  }
+}
