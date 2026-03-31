@@ -1,9 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useProductsStore } from './products.store';
-import {
-  getFilteredProducts,
-  getAppStats,
-} from './products.selectors';
+import { getFilteredProducts, getAppStats } from './products.selectors';
 import { Product, ProductUpdate, AppStats, FilterType } from './types';
 
 export function useProducts(): Product[] {

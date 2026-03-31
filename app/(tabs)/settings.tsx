@@ -57,7 +57,11 @@ export default function SettingsScreen(): React.JSX.Element {
         <List.Item
           title={isUkrainian ? 'Українська 🇺🇦' : 'English 🇺🇸'}
           right={() => (
-            <Switch value={isUkrainian} onValueChange={handleLanguageToggle} color={theme.colors.primary} />
+            <Switch
+              value={isUkrainian}
+              onValueChange={handleLanguageToggle}
+              color={theme.colors.primary}
+            />
           )}
         />
       </List.Section>

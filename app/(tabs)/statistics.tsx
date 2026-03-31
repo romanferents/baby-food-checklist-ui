@@ -41,7 +41,10 @@ export default function StatisticsScreen(): React.JSX.Element {
       </Text>
 
       {/* Overall progress */}
-      <Surface style={[styles.card, { backgroundColor: theme.colors.primaryContainer }]} elevation={0}>
+      <Surface
+        style={[styles.card, { backgroundColor: theme.colors.primaryContainer }]}
+        elevation={0}
+      >
         <Text variant="titleMedium" style={{ color: theme.colors.onPrimaryContainer }}>
           {t('statistics.overallProgress')}
         </Text>
@@ -51,7 +54,10 @@ export default function StatisticsScreen(): React.JSX.Element {
             color={theme.colors.primary}
             style={[styles.progressBar, { backgroundColor: theme.colors.surfaceVariant }]}
           />
-          <Text variant="titleLarge" style={{ color: theme.colors.primary, fontWeight: 'bold', marginLeft: spacing.sm }}>
+          <Text
+            variant="titleLarge"
+            style={{ color: theme.colors.primary, fontWeight: 'bold', marginLeft: spacing.sm }}
+          >
             {Math.round(progressPct * 100)}%
           </Text>
         </View>
@@ -62,23 +68,58 @@ export default function StatisticsScreen(): React.JSX.Element {
 
       {/* Stat cards */}
       <View style={styles.statGrid}>
-        <StatCard label={t('statistics.totalTried')} value={stats.triedProducts} icon="check-circle" />
-        <StatCard label={t('statistics.favorites')} value={stats.favorites} icon="heart" color="#E91E8C" />
-        <StatCard label={t('statistics.customProducts')} value={stats.customProducts} icon="plus-circle" color="#9C27B0" />
+        <StatCard
+          label={t('statistics.totalTried')}
+          value={stats.triedProducts}
+          icon="check-circle"
+        />
+        <StatCard
+          label={t('statistics.favorites')}
+          value={stats.favorites}
+          icon="heart"
+          color="#E91E8C"
+        />
+        <StatCard
+          label={t('statistics.customProducts')}
+          value={stats.customProducts}
+          icon="plus-circle"
+          color="#9C27B0"
+        />
       </View>
 
       {/* Rating breakdown */}
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}>
+      <Text
+        variant="titleMedium"
+        style={[styles.sectionTitle, { color: theme.colors.onBackground }]}
+      >
         {t('statistics.ratingBreakdown')}
       </Text>
       <View style={styles.statGrid}>
-        <StatCard label={t('product.rating.liked')} value={stats.liked} icon="emoticon-happy" color="#4CAF50" />
-        <StatCard label={t('product.rating.neutral')} value={stats.neutral} icon="emoticon-neutral" color="#FF9800" />
-        <StatCard label={t('product.rating.disliked')} value={stats.disliked} icon="emoticon-sad" color="#F44336" />
+        <StatCard
+          label={t('product.rating.liked')}
+          value={stats.liked}
+          icon="emoticon-happy"
+          color="#4CAF50"
+        />
+        <StatCard
+          label={t('product.rating.neutral')}
+          value={stats.neutral}
+          icon="emoticon-neutral"
+          color="#FF9800"
+        />
+        <StatCard
+          label={t('product.rating.disliked')}
+          value={stats.disliked}
+          icon="emoticon-sad"
+          color="#F44336"
+        />
       </View>
 
       {/* Category breakdown */}
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}>
+      <Text
+        variant="titleMedium"
+        style={[styles.sectionTitle, { color: theme.colors.onBackground }]}
+      >
         {t('statistics.categoryBreakdown')}
       </Text>
       {stats.categoryStats
@@ -114,7 +155,10 @@ export default function StatisticsScreen(): React.JSX.Element {
       {/* Recently tried */}
       {stats.recentlyTried.length > 0 && (
         <>
-          <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onBackground }]}>
+          <Text
+            variant="titleMedium"
+            style={[styles.sectionTitle, { color: theme.colors.onBackground }]}
+          >
             {t('statistics.recentlyTried')}
           </Text>
           {stats.recentlyTried.map((p) => (
