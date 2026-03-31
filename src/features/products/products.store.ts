@@ -4,12 +4,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Product, ProductUpdate, FilterType } from './types';
 import { INITIAL_PRODUCTS } from './products.data';
 
+interface BabyInfo {
+  name: string;
+  birthDate: string;
+  complementaryStart: string;
+  weight: string;
+}
+
 interface ProductsState {
   products: Product[];
   isLoading: boolean;
   filter: FilterType;
   searchQuery: string;
   selectedCategory: Product['category'] | null;
+  babyInfo: BabyInfo;
 }
 
 interface ProductsActions {
@@ -22,6 +30,7 @@ interface ProductsActions {
   setSelectedCategory: (category: Product['category'] | null) => void;
   resetAllProgress: () => void;
   importProducts: (products: Product[]) => void;
+  setBabyInfo: (info: Partial<BabyInfo>) => void;
 }
 
 export type ProductsStore = ProductsState & ProductsActions;
@@ -34,6 +43,7 @@ export const useProductsStore = create<ProductsStore>()(
       filter: 'all',
       searchQuery: '',
       selectedCategory: null,
+      babyInfo: { name: '', birthDate: '', complementaryStart: '', weight: '' },
 
       initializeProducts: () => {
         const { products } = get();
@@ -93,11 +103,17 @@ export const useProductsStore = create<ProductsStore>()(
       importProducts: (products) => {
         set({ products });
       },
+
+      setBabyInfo: (info) => {
+        set((state) => ({
+          babyInfo: { ...state.babyInfo, ...info },
+        }));
+      },
     }),
     {
       name: 'products-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({ products: state.products }),
+      partialize: (state) => ({ products: state.products, babyInfo: state.babyInfo }),
     },
   ),
 );

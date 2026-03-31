@@ -161,4 +161,18 @@ export const INITIAL_PRODUCTS: Product[] = [
   makeProduct('p124', 'Тунець', 'Tuna', 'fish'),
   makeProduct('p125', 'Сібас', 'Sea Bass', 'fish'),
   makeProduct('p126', 'Форель морська', 'Sea Trout', 'fish'),
+
+  // Спеції та олії (spices)
+  makeProduct('p127', 'Базилік', 'Basil', 'spices'),
+  makeProduct('p128', 'Зіра', 'Cumin', 'spices'),
+  makeProduct('p129', 'Куркума', 'Turmeric', 'spices'),
+  makeProduct('p130', 'Орегано', 'Oregano', 'spices'),
+  makeProduct('p131', 'Паприка', 'Paprika', 'spices'),
+  makeProduct('p132', 'Розмарин', 'Rosemary', 'spices'),
+  makeProduct('p133', "Тим'ян", 'Thyme', 'spices'),
+  makeProduct('p134', 'Кокосова олія', 'Coconut Oil', 'spices'),
+  makeProduct('p135', 'Соняшникова олія', 'Sunflower Oil', 'spices'),
+  makeProduct('p136', 'Гі (топлене масло)', 'Ghee', 'spices'),
+  makeProduct('p137', 'Авокадова олія', 'Avocado Oil', 'spices'),
+  makeProduct('p138', 'Гарбузова олія', 'Pumpkin Oil', 'spices'),
 ];

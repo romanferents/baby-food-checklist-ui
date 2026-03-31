@@ -24,7 +24,7 @@
     "rating": {
       "liked": "Liked 😍",
       "neutral": "Neutral 😐",
-      "disliked": "Disliked 😞",
+      "disliked": "Disliked �",
       "likedText": "Liked",
       "neutralText": "Neutral",
       "dislikedText": "Disliked",
@@ -53,7 +53,8 @@
     "favorites": "Favorites",
     "ratingBreakdown": "Rating Breakdown",
     "categoryBreakdown": "By Category",
-    "recentlyTried": "Recently Tried"
+    "recentlyTried": "Recently Tried",
+    "of": "of"
   },
   "settings": {
     "title": "Settings",
@@ -81,7 +82,17 @@
       "title": "About",
       "version": "Version",
       "github": "GitHub"
-    }
+    },
+    "babyInfo": {
+      "title": "Baby Information",
+      "name": "Baby Name",
+      "namePlaceholder": "e.g. Olivia",
+      "birthDate": "Birth Date",
+      "complementaryStart": "Complementary Feeding Start",
+      "weight": "Start Weight (kg)",
+      "weightPlaceholder": "8.0"
+    },
+    "allCategories": "All Categories"
   },
   "categories": {
     "vegetables": "Vegetables & Greens",
@@ -90,7 +101,8 @@
     "meat": "Meat & Animal Products",
     "grains": "Grains & Legumes",
     "nutsSeeds": "Nuts & Seeds",
-    "fish": "Fish & Seafood"
+    "fish": "Fish & Seafood",
+    "spices": "Spices & Oils"
   },
   "errors": {
     "generic": "Something went wrong",

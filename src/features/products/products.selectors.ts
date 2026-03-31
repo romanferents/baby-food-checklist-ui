@@ -59,6 +59,7 @@ export function getCategoryStats(products: Product[]): CategoryStats[] {
     'grains',
     'nutsSeeds',
     'fish',
+    'spices',
   ];
 
   return categories.map((category) => {

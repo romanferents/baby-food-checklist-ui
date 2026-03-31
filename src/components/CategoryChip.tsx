@@ -1,11 +1,9 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { ProductCategory } from '../features/products/types';
-import { CATEGORY_ICONS, CATEGORY_COLORS } from '../utils/categories';
-import { spacing } from '../theme/spacing';
+import { CATEGORY_META } from '../utils/categories';
 
 interface CategoryChipProps {
   category: ProductCategory;
@@ -18,31 +16,28 @@ export function CategoryChip({
   selected,
   onPress,
 }: CategoryChipProps): React.JSX.Element {
-  const theme = useTheme();
   const { t } = useTranslation();
-  const color = CATEGORY_COLORS[category];
-  const icon = CATEGORY_ICONS[category];
+  const meta = CATEGORY_META[category];
 
   return (
     <TouchableOpacity
       style={[
         styles.chip,
         {
-          backgroundColor: selected ? color : theme.colors.surfaceVariant,
-          borderColor: color,
+          backgroundColor: selected ? meta.color : meta.bgColor,
+          borderColor: selected ? meta.color : meta.borderColor,
         },
       ]}
       onPress={() => onPress(selected ? null : category)}
       activeOpacity={0.7}
     >
-      <MaterialCommunityIcons
-        name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
-        size={16}
-        color={selected ? '#fff' : color}
-      />
+      <Text style={styles.emoji}>{meta.emoji}</Text>
       <Text
-        variant="labelMedium"
-        style={{ color: selected ? '#fff' : theme.colors.onSurfaceVariant, marginLeft: spacing.xs }}
+        style={[
+          styles.label,
+          { color: selected ? '#fff' : meta.color },
+        ]}
+        numberOfLines={1}
       >
         {t(`categories.${category}`)}
       </Text>
@@ -54,10 +49,18 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    marginRight: spacing.xs,
+    marginRight: 8,
+    gap: 6,
+  },
+  emoji: {
+    fontSize: 16,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

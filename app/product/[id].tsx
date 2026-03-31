@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Text, Switch, TextInput, Button, Divider, Chip, useTheme } from 'react-native-paper';
+import { ScrollView, StyleSheet, View, TouchableOpacity, TextInput, Platform } from 'react-native';
+import { Text, Switch, useTheme } from 'react-native-paper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useProductById, useProductActions } from '../../src/features/products/products.hooks';
 import { RatingSelector } from '../../src/components/RatingSelector';
 import { ConfirmDialog } from '../../src/components/ConfirmDialog';
 import { formatDate } from '../../src/utils/date';
-import { spacing } from '../../src/theme/spacing';
 import { ProductRating } from '../../src/features/products/types';
-import { CATEGORY_COLORS, CATEGORY_ICONS } from '../../src/utils/categories';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { CATEGORY_META } from '../../src/utils/categories';
 
 export default function ProductDetailScreen(): React.JSX.Element {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,15 +23,15 @@ export default function ProductDetailScreen(): React.JSX.Element {
   if (!product) {
     return (
       <View style={styles.centered}>
-        <Text variant="bodyLarge">{t('errors.loadFailed')}</Text>
+        <Text style={{ fontSize: 16 }}>{t('errors.loadFailed')}</Text>
       </View>
     );
   }
 
   const lang = i18n.language;
   const name = lang === 'uk' ? product.nameUk : product.nameEn;
-  const categoryColor = CATEGORY_COLORS[product.category];
-  const categoryIcon = CATEGORY_ICONS[product.category];
+  const altName = lang === 'uk' ? product.nameEn : product.nameUk;
+  const meta = CATEGORY_META[product.category];
 
   const handleTriedToggle = () => {
     if (!product.tried) {
@@ -77,119 +76,133 @@ export default function ProductDetailScreen(): React.JSX.Element {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text variant="headlineMedium" style={[styles.title, { color: theme.colors.onBackground }]}>
-          {name}
-        </Text>
-        <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-          {product.nameUk !== name ? product.nameUk : product.nameEn}
-        </Text>
-
-        <View style={styles.chipRow}>
-          <Chip
-            icon={() => (
-              <MaterialCommunityIcons
-                name={categoryIcon as keyof typeof MaterialCommunityIcons.glyphMap}
-                size={16}
-                color={categoryColor}
-              />
-            )}
-            style={{ backgroundColor: categoryColor + '20' }}
-            textStyle={{ color: categoryColor }}
-          >
-            {t(`categories.${product.category}`)}
-          </Chip>
-          {product.isCustom && (
-            <Chip icon="pencil" compact>
-              Custom
-            </Chip>
-          )}
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
+        </TouchableOpacity>
+        <View style={styles.headerInfo}>
+          <Text style={[styles.title, { color: theme.colors.onBackground }]}>{name}</Text>
+          <Text style={styles.altName}>{altName}</Text>
         </View>
+        <TouchableOpacity onPress={handleFavoriteToggle} style={styles.favoriteButton}>
+          <MaterialCommunityIcons
+            name={product.favorite ? 'heart' : 'heart-outline'}
+            size={24}
+            color={product.favorite ? '#e74c3c' : '#d1d5db'}
+          />
+        </TouchableOpacity>
       </View>
 
-      <Divider />
-
-      {/* Tried toggle */}
-      <View style={styles.row}>
-        <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>
-          {product.tried ? t('product.tried') : t('product.notTried')}
+      {/* Category badge */}
+      <View style={[styles.categoryBadge, { backgroundColor: meta.bgColor, borderColor: meta.borderColor }]}>
+        <Text style={styles.categoryEmoji}>{meta.emoji}</Text>
+        <Text style={[styles.categoryName, { color: meta.color }]}>
+          {t(`categories.${product.category}`)}
         </Text>
+        {product.isCustom && (
+          <View style={styles.customTag}>
+            <Text style={styles.customTagText}>✨ Custom</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Tried toggle card */}
+      <TouchableOpacity
+        style={[
+          styles.triedCard,
+          {
+            backgroundColor: product.tried ? '#dcfce7' : theme.colors.surface,
+            borderColor: product.tried ? '#86efac' : '#e5e7eb',
+          },
+        ]}
+        onPress={handleTriedToggle}
+        activeOpacity={0.7}
+      >
+        <View style={styles.triedLeft}>
+          <Text style={styles.triedEmoji}>{product.tried ? '✅' : '⬜'}</Text>
+          <View>
+            <Text style={[styles.triedText, { color: product.tried ? '#16a34a' : '#6b7280' }]}>
+              {product.tried ? t('product.tried') : t('product.notTried')}
+            </Text>
+            {product.tried && product.firstTriedDate && (
+              <Text style={styles.triedDate}>
+                📅 {formatDate(product.firstTriedDate, lang)}
+              </Text>
+            )}
+          </View>
+        </View>
         <Switch
           value={product.tried}
           onValueChange={handleTriedToggle}
-          color={theme.colors.primary}
+          trackColor={{ false: '#e5e7eb', true: '#86efac' }}
+          thumbColor={product.tried ? '#16a34a' : '#f3f4f6'}
         />
-      </View>
-
-      {product.tried && product.firstTriedDate && (
-        <Text
-          variant="bodySmall"
-          style={[styles.dateText, { color: theme.colors.onSurfaceVariant }]}
-        >
-          {t('product.firstTried')}: {formatDate(product.firstTriedDate, lang)}
-        </Text>
-      )}
-
-      {/* Favorite */}
-      <View style={styles.row}>
-        <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>
-          {t('product.favorite')}
-        </Text>
-        <Switch
-          value={product.favorite}
-          onValueChange={handleFavoriteToggle}
-          color={theme.colors.primary}
-        />
-      </View>
+      </TouchableOpacity>
 
       {/* Rating */}
       {product.tried && (
-        <View style={styles.section}>
-          <Text
-            variant="labelLarge"
-            style={[styles.label, { color: theme.colors.onSurfaceVariant }]}
-          >
-            {t('product.rating.label')}
-          </Text>
-          <RatingSelector value={product.rating} onChange={handleRatingChange} />
-        </View>
-      )}
+        <>
+          {/* First tried date */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>📅 {t('product.firstTried')}</Text>
+            <TextInput
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor="#9ca3af"
+              value={product.firstTriedDate ? product.firstTriedDate.split('T')[0] : ''}
+              onChangeText={(text) => {
+                updateProduct(product.id, { firstTriedDate: text ? new Date(text).toISOString() : undefined });
+              }}
+              style={[styles.dateInput, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+            />
+          </View>
 
-      <Divider />
+          {/* Rating */}
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>🌟 {t('product.rating.label')}</Text>
+            <RatingSelector value={product.rating} onChange={handleRatingChange} />
+          </View>
+        </>
+      )}
 
       {/* Reaction notes */}
       <View style={styles.section}>
+        <Text style={styles.sectionLabel}>⚠️ {t('product.reactionNotes')}</Text>
         <TextInput
-          label={t('product.reactionNotes')}
+          placeholder={t('product.reactionNotes')}
+          placeholderTextColor="#9ca3af"
           value={product.reactionNotes ?? ''}
           onChangeText={handleReactionNotesChange}
           multiline
           numberOfLines={3}
-          mode="outlined"
+          style={[styles.textArea, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+          textAlignVertical="top"
         />
       </View>
 
       {/* Notes */}
       <View style={styles.section}>
+        <Text style={styles.sectionLabel}>📝 {t('product.notes')}</Text>
         <TextInput
-          label={t('product.notes')}
+          placeholder={t('product.notes')}
+          placeholderTextColor="#9ca3af"
           value={product.notes ?? ''}
           onChangeText={handleNotesChange}
           multiline
           numberOfLines={3}
-          mode="outlined"
+          style={[styles.textArea, { backgroundColor: theme.colors.surface, color: theme.colors.onSurface }]}
+          textAlignVertical="top"
         />
       </View>
 
-      {/* Delete (custom products only) */}
+      {/* Delete (custom products) */}
       {product.isCustom && (
-        <Button
-          mode="outlined"
-          onPress={() => setDeleteDialogVisible(true)}
+        <TouchableOpacity
           style={styles.deleteButton}
-          textColor="#B00020"
+          onPress={() => setDeleteDialogVisible(true)}
+          activeOpacity={0.7}
         >
-          {t('product.delete')}
-        </Button>
+          <MaterialCommunityIcons name="trash-can-outline" size={18} color="#dc2626" />
+          <Text style={styles.deleteText}>{t('product.delete')}</Text>
+        </TouchableOpacity>
       )}
 
       <ConfirmDialog
@@ -208,8 +221,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: spacing.md,
-    paddingBottom: spacing.xxl,
+    padding: 16,
+    paddingBottom: 40,
   },
   centered: {
     flex: 1,
@@ -217,35 +230,130 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    marginBottom: spacing.md,
-    gap: spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  backButton: {
+    padding: 4,
+  },
+  headerInfo: {
+    flex: 1,
   },
   title: {
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '700',
   },
-  chipRow: {
+  altName: {
+    fontSize: 13,
+    color: '#9ca3af',
+    marginTop: 2,
+  },
+  favoriteButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#fef2f2',
+  },
+  categoryBadge: {
     flexDirection: 'row',
-    gap: spacing.xs,
-    marginTop: spacing.xs,
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 8,
+    marginBottom: 16,
   },
-  row: {
+  categoryEmoji: {
+    fontSize: 18,
+  },
+  categoryName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  customTag: {
+    backgroundColor: '#e0e7ff',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  customTagText: {
+    fontSize: 11,
+    color: '#4338ca',
+    fontWeight: '600',
+  },
+  triedCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing.md,
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    marginBottom: 16,
   },
-  dateText: {
-    marginTop: -spacing.sm,
-    marginBottom: spacing.sm,
+  triedLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  triedEmoji: {
+    fontSize: 24,
+  },
+  triedText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  triedDate: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 2,
   },
   section: {
-    paddingVertical: spacing.sm,
+    marginBottom: 16,
   },
-  label: {
-    marginBottom: spacing.xs,
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+    marginBottom: 8,
+  },
+  textArea: {
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 15,
+    minHeight: 80,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  dateInput: {
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 15,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
   },
   deleteButton: {
-    marginTop: spacing.lg,
-    borderColor: '#B00020',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#fca5a5',
+    backgroundColor: '#fef2f2',
+    marginTop: 8,
+  },
+  deleteText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#dc2626',
   },
 });

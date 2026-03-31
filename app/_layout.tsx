@@ -4,8 +4,7 @@ import { Stack } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../src/i18n';
-import { useColorScheme } from '../src/hooks/useColorScheme';
-import { lightTheme, darkTheme } from '../src/theme';
+import { lightTheme } from '../src/theme';
 import { useProductActions } from '../src/features/products/products.hooks';
 
 function AppContent(): React.JSX.Element {
@@ -28,13 +27,12 @@ function AppContent(): React.JSX.Element {
 }
 
 export default function RootLayout(): React.JSX.Element {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+  const theme = lightTheme;
 
   return (
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <StatusBar style="dark" />
         <AppContent />
       </PaperProvider>
     </SafeAreaProvider>

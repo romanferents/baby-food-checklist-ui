@@ -6,7 +6,8 @@ export type ProductCategory =
   | 'meat'
   | 'grains'
   | 'nutsSeeds'
-  | 'fish';
+  | 'fish'
+  | 'spices';
 
 /** Rating for a tried food */
 export type ProductRating = 'liked' | 'neutral' | 'disliked';

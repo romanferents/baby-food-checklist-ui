@@ -11,11 +11,25 @@ export default function TabsLayout(): React.JSX.Element {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
-        tabBarStyle: { backgroundColor: theme.colors.surface },
-        headerStyle: { backgroundColor: theme.colors.surface },
-        headerTintColor: theme.colors.onSurface,
+        headerShown: false,
+        tabBarActiveTintColor: '#ff8c69',
+        tabBarInactiveTintColor: '#9ca3af',
+        tabBarStyle: {
+          backgroundColor: theme.colors.surface,
+          borderTopWidth: 0,
+          elevation: 10,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 4,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
       }}
     >
       <Tabs.Screen
@@ -23,7 +37,7 @@ export default function TabsLayout(): React.JSX.Element {
         options={{
           title: t('navigation.products'),
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="food-apple" size={size} color={color} />
+            <MaterialCommunityIcons name="format-list-bulleted" size={size} color={color} />
           ),
         }}
       />
@@ -41,7 +55,7 @@ export default function TabsLayout(): React.JSX.Element {
         options={{
           title: t('navigation.settings'),
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="cog" size={size} color={color} />
+            <MaterialCommunityIcons name="cog-outline" size={size} color={color} />
           ),
         }}
       />
