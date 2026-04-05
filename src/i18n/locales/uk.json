@@ -133,7 +133,9 @@
       "emailInvalid": "Невірний формат пошти",
       "passwordRequired": "Пароль обов'язковий",
       "passwordLength": "Пароль: від 6 до 100 символів",
-      "passwordMismatch": "Паролі не збігаються"
+      "passwordMismatch": "Паролі не збігаються",
+      "showPassword": "Показати пароль",
+      "hidePassword": "Сховати пароль"
     },
     "errors": {
       "invalidCredentials": "Невірне ім'я або пароль",

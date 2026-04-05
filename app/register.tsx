@@ -159,7 +159,11 @@ export default function RegisterScreen(): React.JSX.Element {
               <TextInput.Icon
                 icon={secureEntry ? 'eye-off' : 'eye'}
                 onPress={() => setSecureEntry(!secureEntry)}
-                accessibilityLabel={secureEntry ? 'Show password' : 'Hide password'}
+                accessibilityLabel={
+                  secureEntry
+                    ? t('auth.validation.showPassword')
+                    : t('auth.validation.hidePassword')
+                }
               />
             }
             style={styles.input}
@@ -179,7 +183,11 @@ export default function RegisterScreen(): React.JSX.Element {
               <TextInput.Icon
                 icon={secureConfirm ? 'eye-off' : 'eye'}
                 onPress={() => setSecureConfirm(!secureConfirm)}
-                accessibilityLabel={secureConfirm ? 'Show password' : 'Hide password'}
+                accessibilityLabel={
+                  secureConfirm
+                    ? t('auth.validation.showPassword')
+                    : t('auth.validation.hidePassword')
+                }
               />
             }
             style={styles.input}

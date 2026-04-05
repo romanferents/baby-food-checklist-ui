@@ -133,7 +133,9 @@
       "emailInvalid": "Invalid email format",
       "passwordRequired": "Password is required",
       "passwordLength": "Password: 6 to 100 characters",
-      "passwordMismatch": "Passwords do not match"
+      "passwordMismatch": "Passwords do not match",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     },
     "errors": {
       "invalidCredentials": "Invalid username or password",

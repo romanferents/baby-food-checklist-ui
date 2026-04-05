@@ -6,15 +6,15 @@ export interface ApiConfig {
   baseUrl: string;
 }
 
-export function setApiBaseUrl(url: string): void {
-  (globalThis as Record<string, unknown>).__apiBaseUrl = url;
-}
-
 async function authenticatedFetch(url: string, options: RequestInit = {}): Promise<Response> {
   const { token } = useAuthStore.getState();
+  const existingHeaders =
+    options.headers && typeof options.headers === 'object' && !Array.isArray(options.headers)
+      ? (options.headers as Record<string, string>)
+      : {};
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...((options.headers as Record<string, string>) ?? {}),
+    ...existingHeaders,
   };
 
   if (token) {
