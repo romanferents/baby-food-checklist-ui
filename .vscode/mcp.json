@@ -14,6 +14,17 @@
     "chrome-devtools": {
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "baby-food-checklist": {
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/../baby-food-checklist-api/src/BabyFoodChecklist.McpServer"
+      ],
+      "env": {
+        "ConnectionStrings__DefaultConnection": "Host=localhost;Port=5432;Database=babyfoodchecklist;Username=postgres;Password=postgres"
+      }
     }
   }
 }

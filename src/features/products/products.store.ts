@@ -1,8 +1,90 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Product, ProductUpdate, FilterType } from './types';
-import { INITIAL_PRODUCTS } from './products.data';
+import { Product, ProductUpdate, FilterType, ProductCategory, ProductRating } from './types';
+import {
+  fetchProductsFromApi,
+  fetchEntriesFromApi,
+  upsertEntryOnApi,
+  createProductOnApi,
+  deleteProductOnApi,
+  deleteEntryOnApi,
+  ApiProductDto,
+  ApiEntryDto,
+} from '../../services/api';
+import { STORAGE_KEYS, DEFAULT_API_URL } from '../../constants';
+
+// ── Category mapping: backend enum name → UI key ─────────
+const CATEGORY_MAP: Record<string, ProductCategory> = {
+  Vegetables: 'vegetables',
+  Fruits: 'fruits',
+  Dairy: 'dairy',
+  Meat: 'meat',
+  Grains: 'grains',
+  NutsSeeds: 'nutsSeeds',
+  Fish: 'fish',
+  Spices: 'spices',
+  Other: 'spices', // fallback
+};
+
+const CATEGORY_REVERSE: Record<string, string> = {
+  vegetables: 'Vegetables',
+  fruits: 'Fruits',
+  dairy: 'Dairy',
+  meat: 'Meat',
+  grains: 'Grains',
+  nutsSeeds: 'NutsSeeds',
+  fish: 'Fish',
+  spices: 'Spices',
+};
+
+function mapRating(r: string | null | undefined): ProductRating | undefined {
+  if (!r) return undefined;
+  const lower = r.toLowerCase();
+  if (lower === 'liked') return 'liked';
+  if (lower === 'neutral') return 'neutral';
+  if (lower === 'disliked') return 'disliked';
+  return undefined;
+}
+
+function ratingToApi(r: ProductRating | undefined): string | null {
+  if (!r) return null;
+  if (r === 'liked') return 'Liked';
+  if (r === 'neutral') return 'Neutral';
+  if (r === 'disliked') return 'Disliked';
+  return null;
+}
+
+/** Merge server products + entries into the flat Product shape the UI expects */
+function mergeProductsAndEntries(
+  apiProducts: ApiProductDto[],
+  apiEntries: ApiEntryDto[],
+): Product[] {
+  const entriesByProductId = new Map<string, ApiEntryDto>();
+  for (const e of apiEntries) {
+    entriesByProductId.set(e.productId, e);
+  }
+
+  return apiProducts.map((p) => {
+    const entry = entriesByProductId.get(p.id);
+    return {
+      id: p.id,
+      nameUk: p.nameUk,
+      nameEn: p.nameEn,
+      category: CATEGORY_MAP[p.category] ?? 'vegetables',
+      tried: entry?.tried ?? false,
+      firstTriedDate: entry?.firstTriedAt ?? undefined,
+      rating: mapRating(entry?.rating),
+      favorite: entry?.isFavorite ?? false,
+      reactionNotes: entry?.reactionNote ?? undefined,
+      notes: entry?.notes ?? undefined,
+      isCustom: !p.isDefault,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      _entryId: entry?.id,
+    } as Product & { _entryId?: string };
+  });
+}
 
 interface BabyInfo {
   name: string;
@@ -14,14 +96,19 @@ interface BabyInfo {
 interface ProductsState {
   products: Product[];
   isLoading: boolean;
+  lastError: string | null;
   filter: FilterType;
   searchQuery: string;
   selectedCategory: Product['category'] | null;
   babyInfo: BabyInfo;
+  apiBaseUrl: string;
+  /** Maps productId → entryId for quick lookup when deleting entries */
+  entryIdMap: Record<string, string>;
 }
 
 interface ProductsActions {
   initializeProducts: () => void;
+  loadFromApi: () => Promise<void>;
   updateProduct: (id: string, update: ProductUpdate) => void;
   addProduct: (product: Product) => void;
   deleteProduct: (id: string) => void;
@@ -31,6 +118,7 @@ interface ProductsActions {
   resetAllProgress: () => void;
   importProducts: (products: Product[]) => void;
   setBabyInfo: (info: Partial<BabyInfo>) => void;
+  setApiBaseUrl: (url: string) => void;
 }
 
 export type ProductsStore = ProductsState & ProductsActions;
@@ -40,39 +128,124 @@ export const useProductsStore = create<ProductsStore>()(
     (set, get) => ({
       products: [],
       isLoading: false,
+      lastError: null,
       filter: 'all',
       searchQuery: '',
       selectedCategory: null,
       babyInfo: { name: '', birthDate: '', complementaryStart: '', weight: '' },
+      apiBaseUrl: DEFAULT_API_URL,
+      entryIdMap: {},
 
       initializeProducts: () => {
-        const { products } = get();
-        if (products.length === 0) {
-          set({ products: INITIAL_PRODUCTS });
-        } else {
-          // Merge any new products from INITIAL_PRODUCTS that aren't in state
-          const existingIds = new Set(products.map((p) => p.id));
-          const newProducts = INITIAL_PRODUCTS.filter((p) => !existingIds.has(p.id));
-          if (newProducts.length > 0) {
-            set({ products: [...products, ...newProducts] });
+        // Now a no-op on its own; the real loading happens in loadFromApi
+        // Keep for backward compat with _layout.tsx call
+      },
+
+      loadFromApi: async () => {
+        const baseUrl = get().apiBaseUrl;
+        if (!baseUrl) return;
+
+        set({ isLoading: true, lastError: null });
+        try {
+          const [apiProducts, apiEntries] = await Promise.all([
+            fetchProductsFromApi(baseUrl),
+            fetchEntriesFromApi(baseUrl),
+          ]);
+
+          const merged = mergeProductsAndEntries(apiProducts, apiEntries);
+
+          // Build entryId map
+          const entryIdMap: Record<string, string> = {};
+          for (const e of apiEntries) {
+            entryIdMap[e.productId] = e.id;
           }
+
+          set({ products: merged, entryIdMap, isLoading: false, lastError: null });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Failed to load data from API';
+          set({ isLoading: false, lastError: message });
         }
       },
 
       updateProduct: (id, update) => {
+        // Optimistic local update
         set((state) => ({
           products: state.products.map((p) =>
             p.id === id ? { ...p, ...update, updatedAt: new Date().toISOString() } : p,
           ),
         }));
+
+        // Persist to API via upsert entry
+        const baseUrl = get().apiBaseUrl;
+        if (!baseUrl) return;
+
+        const product = get().products.find((p) => p.id === id);
+        if (!product) return;
+
+        upsertEntryOnApi(baseUrl, {
+          productId: id,
+          tried: product.tried,
+          firstTriedAt: product.firstTriedDate ?? null,
+          rating: ratingToApi(product.rating),
+          reactionNote: product.reactionNotes ?? null,
+          notes: product.notes ?? null,
+          isFavorite: product.favorite,
+        })
+          .then((entry) => {
+            // Update entryId map
+            set((state) => ({
+              entryIdMap: { ...state.entryIdMap, [id]: entry.id },
+            }));
+          })
+          .catch(() => {
+            // Silently fail — user data was saved optimistically
+          });
       },
 
       addProduct: (product) => {
+        // Optimistic local add
         set((state) => ({ products: [...state.products, product] }));
+
+        // Persist to API
+        const baseUrl = get().apiBaseUrl;
+        if (!baseUrl) return;
+
+        createProductOnApi(baseUrl, {
+          nameUk: product.nameUk,
+          nameEn: product.nameEn,
+          category: CATEGORY_REVERSE[product.category] ?? 'Vegetables',
+        })
+          .then((apiProduct) => {
+            // Replace temp ID with server ID
+            set((state) => ({
+              products: state.products.map((p) =>
+                p.id === product.id ? { ...p, id: apiProduct.id } : p,
+              ),
+            }));
+          })
+          .catch(() => {
+            // Rollback on failure
+            set((state) => ({
+              products: state.products.filter((p) => p.id !== product.id),
+            }));
+          });
       },
 
       deleteProduct: (id) => {
+        const existing = get().products.find((p) => p.id === id);
+        // Optimistic local remove
         set((state) => ({ products: state.products.filter((p) => p.id !== id) }));
+
+        // Delete on API (only custom products can be deleted)
+        const baseUrl = get().apiBaseUrl;
+        if (!baseUrl) return;
+
+        deleteProductOnApi(baseUrl, id).catch(() => {
+          // Rollback on failure
+          if (existing) {
+            set((state) => ({ products: [...state.products, existing] }));
+          }
+        });
       },
 
       setFilter: (filter) => set({ filter }),
@@ -82,6 +255,10 @@ export const useProductsStore = create<ProductsStore>()(
       setSelectedCategory: (selectedCategory) => set({ selectedCategory }),
 
       resetAllProgress: () => {
+        const baseUrl = get().apiBaseUrl;
+        const { entryIdMap } = get();
+
+        // Optimistic reset
         set((state) => ({
           products: state.products.map((p) =>
             p.isCustom
@@ -98,6 +275,16 @@ export const useProductsStore = create<ProductsStore>()(
                 },
           ),
         }));
+
+        // Delete all entries on API
+        if (baseUrl) {
+          for (const entryId of Object.values(entryIdMap)) {
+            deleteEntryOnApi(baseUrl, entryId).catch(() => {
+              /* best effort */
+            });
+          }
+          set({ entryIdMap: {} });
+        }
       },
 
       importProducts: (products) => {
@@ -109,11 +296,18 @@ export const useProductsStore = create<ProductsStore>()(
           babyInfo: { ...state.babyInfo, ...info },
         }));
       },
+
+      setApiBaseUrl: (url) => {
+        set({ apiBaseUrl: url });
+      },
     }),
     {
-      name: 'products-storage',
+      name: STORAGE_KEYS.PRODUCTS,
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({ products: state.products, babyInfo: state.babyInfo }),
+      partialize: (state) => ({
+        babyInfo: state.babyInfo,
+        apiBaseUrl: state.apiBaseUrl,
+      }),
     },
   ),
 );

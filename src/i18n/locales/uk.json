@@ -104,6 +104,45 @@
     "fish": "Риба та морепродукти",
     "spices": "Спеції та олії"
   },
+  "auth": {
+    "login": {
+      "title": "Увійти",
+      "username": "Ім'я користувача",
+      "password": "Пароль",
+      "submit": "Увійти",
+      "noAccount": "Немає акаунту?",
+      "register": "Зареєструватися"
+    },
+    "register": {
+      "title": "Реєстрація",
+      "username": "Ім'я користувача",
+      "email": "Електронна пошта",
+      "password": "Пароль",
+      "confirmPassword": "Підтвердити пароль",
+      "submit": "Зареєструватися",
+      "hasAccount": "Вже є акаунт?",
+      "login": "Увійти"
+    },
+    "logout": "Вийти",
+    "logoutConfirm": "Ви впевнені, що хочете вийти?",
+    "validation": {
+      "usernameRequired": "Ім'я користувача обов'язкове",
+      "usernameLength": "Ім'я: від 3 до 50 символів",
+      "usernameFormat": "Лише букви, цифри та _",
+      "emailRequired": "Електронна пошта обов'язкова",
+      "emailInvalid": "Невірний формат пошти",
+      "passwordRequired": "Пароль обов'язковий",
+      "passwordLength": "Пароль: від 6 до 100 символів",
+      "passwordMismatch": "Паролі не збігаються",
+      "showPassword": "Показати пароль",
+      "hidePassword": "Сховати пароль"
+    },
+    "errors": {
+      "invalidCredentials": "Невірне ім'я або пароль",
+      "networkError": "Помилка мережі. Спробуйте пізніше."
+    },
+    "userInfo": "Інформація про користувача"
+  },
   "errors": {
     "generic": "Щось пішло не так",
     "loadFailed": "Помилка завантаження",

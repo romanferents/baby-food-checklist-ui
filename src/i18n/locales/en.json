@@ -104,6 +104,45 @@
     "fish": "Fish & Seafood",
     "spices": "Spices & Oils"
   },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "register": "Register"
+    },
+    "register": {
+      "title": "Register",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Register",
+      "hasAccount": "Already have an account?",
+      "login": "Sign In"
+    },
+    "logout": "Sign Out",
+    "logoutConfirm": "Are you sure you want to sign out?",
+    "validation": {
+      "usernameRequired": "Username is required",
+      "usernameLength": "Username: 3 to 50 characters",
+      "usernameFormat": "Letters, numbers and _ only",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "passwordRequired": "Password is required",
+      "passwordLength": "Password: 6 to 100 characters",
+      "passwordMismatch": "Passwords do not match",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid username or password",
+      "networkError": "Network error. Please try again later."
+    },
+    "userInfo": "User Information"
+  },
   "errors": {
     "generic": "Something went wrong",
     "loadFailed": "Failed to load",
