@@ -39,10 +39,7 @@ function AppContent(): React.JSX.Element {
       const savedUrl = await AsyncStorage.getItem(STORAGE_KEYS.API_URL);
       if (savedUrl) {
         setApiBaseUrl(savedUrl);
-        // Small delay so the store picks up the new baseUrl
-        setTimeout(() => {
-          loadFromApi();
-        }, 50);
+        loadFromApi();
       }
     };
     load();

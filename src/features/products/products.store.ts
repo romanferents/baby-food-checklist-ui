@@ -41,9 +41,9 @@ const CATEGORY_REVERSE: Record<string, string> = {
 function mapRating(r: string | null | undefined): ProductRating | undefined {
   if (!r) return undefined;
   const lower = r.toLowerCase();
-  if (lower === 'liked' || lower === '1') return 'liked';
-  if (lower === 'neutral' || lower === '2') return 'neutral';
-  if (lower === 'disliked' || lower === '3') return 'disliked';
+  if (lower === 'liked') return 'liked';
+  if (lower === 'neutral') return 'neutral';
+  if (lower === 'disliked') return 'disliked';
   return undefined;
 }
 
@@ -96,6 +96,7 @@ interface BabyInfo {
 interface ProductsState {
   products: Product[];
   isLoading: boolean;
+  lastError: string | null;
   filter: FilterType;
   searchQuery: string;
   selectedCategory: Product['category'] | null;
@@ -127,6 +128,7 @@ export const useProductsStore = create<ProductsStore>()(
     (set, get) => ({
       products: [],
       isLoading: false,
+      lastError: null,
       filter: 'all',
       searchQuery: '',
       selectedCategory: null,
@@ -143,7 +145,7 @@ export const useProductsStore = create<ProductsStore>()(
         const baseUrl = get().apiBaseUrl;
         if (!baseUrl) return;
 
-        set({ isLoading: true });
+        set({ isLoading: true, lastError: null });
         try {
           const [apiProducts, apiEntries] = await Promise.all([
             fetchProductsFromApi(baseUrl),
@@ -158,9 +160,10 @@ export const useProductsStore = create<ProductsStore>()(
             entryIdMap[e.productId] = e.id;
           }
 
-          set({ products: merged, entryIdMap, isLoading: false });
-        } catch {
-          set({ isLoading: false });
+          set({ products: merged, entryIdMap, isLoading: false, lastError: null });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Failed to load data from API';
+          set({ isLoading: false, lastError: message });
         }
       },
 
