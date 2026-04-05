@@ -1,17 +1,80 @@
 import { Product } from '../features/products/types';
+import { AuthResponse, LoginRequest, RegisterRequest } from '../features/auth/types';
+import { useAuthStore } from '../features/auth/auth.store';
 
 export interface ApiConfig {
   baseUrl: string;
-  apiKey?: string;
+}
+
+export function setApiBaseUrl(url: string): void {
+  (globalThis as Record<string, unknown>).__apiBaseUrl = url;
+}
+
+async function authenticatedFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const { token } = useAuthStore.getState();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((options.headers as Record<string, string>) ?? {}),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, { ...options, headers });
+
+  if (response.status === 401) {
+    useAuthStore.getState().logout();
+    throw new Error('Unauthorized');
+  }
+
+  return response;
+}
+
+export async function loginUser(baseUrl: string, credentials: LoginRequest): Promise<AuthResponse> {
+  const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const message = errorData?.message ?? errorData?.title ?? response.statusText;
+    throw new ApiError(message, response.status);
+  }
+
+  return (await response.json()) as AuthResponse;
+}
+
+export async function registerUser(baseUrl: string, data: RegisterRequest): Promise<AuthResponse> {
+  const response = await fetch(`${baseUrl}/api/v1/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const message = errorData?.message ?? errorData?.title ?? response.statusText;
+    throw new ApiError(message, response.status);
+  }
+
+  return (await response.json()) as AuthResponse;
+}
+
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
 }
 
 export async function syncProducts(products: Product[], config: ApiConfig): Promise<Product[]> {
-  const response = await fetch(`${config.baseUrl}/products/sync`, {
+  const response = await authenticatedFetch(`${config.baseUrl}/api/v1/products/sync`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
-    },
     body: JSON.stringify({ products }),
   });
 
@@ -24,11 +87,7 @@ export async function syncProducts(products: Product[], config: ApiConfig): Prom
 }
 
 export async function fetchProducts(config: ApiConfig): Promise<Product[]> {
-  const response = await fetch(`${config.baseUrl}/products`, {
-    headers: {
-      ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
-    },
-  });
+  const response = await authenticatedFetch(`${config.baseUrl}/api/v1/products`);
 
   if (!response.ok) {
     throw new Error(`Fetch failed: ${response.statusText}`);

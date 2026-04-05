@@ -8,4 +8,5 @@ export const STORAGE_KEYS = {
   THEME: 'theme-preference',
   LANGUAGE: 'language-preference',
   API_URL: 'api-url',
+  AUTH: 'auth-storage',
 } as const;

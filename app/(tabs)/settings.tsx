@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useProductsStore } from '../../src/features/products/products.store';
 import { useProductActions } from '../../src/features/products/products.hooks';
+import { useAuth, useLogout } from '../../src/features/auth/auth.hooks';
 import { ConfirmDialog } from '../../src/components/ConfirmDialog';
 import { exportToJSON, shareFile } from '../../src/services/backup';
 import { APP_VERSION, GITHUB_URL, STORAGE_KEYS } from '../../src/constants';
@@ -20,7 +21,10 @@ export default function SettingsScreen(): React.JSX.Element {
   const babyInfo = useProductsStore((s) => s.babyInfo);
   const setBabyInfo = useProductsStore((s) => s.setBabyInfo);
   const { resetAllProgress } = useProductActions();
+  const { user } = useAuth();
+  const logout = useLogout();
   const [resetDialogVisible, setResetDialogVisible] = useState(false);
+  const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
 
   const isUkrainian = i18n.language === 'uk';
 
@@ -215,9 +219,43 @@ export default function SettingsScreen(): React.JSX.Element {
         </View>
       </View>
 
+      {/* User Info */}
+      {user ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>👤 {t('auth.userInfo')}</Text>
+          <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <Text style={styles.actionEmoji}>🧑</Text>
+                <Text style={[styles.settingText, { color: theme.colors.onSurface }]}>
+                  {user.username}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <Text style={styles.actionEmoji}>📧</Text>
+                <Text style={[styles.settingText, { color: theme.colors.onSurface }]}>
+                  {user.email}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      ) : null}
+
       {/* Danger Zone */}
       <View style={styles.section}>
         <Text style={[styles.sectionLabel, { color: '#dc2626' }]}>⚠️ Danger Zone</Text>
+        <TouchableOpacity
+          style={[styles.dangerButton, { marginBottom: 12 }]}
+          onPress={() => setLogoutDialogVisible(true)}
+          activeOpacity={0.7}
+        >
+          <MaterialCommunityIcons name="logout" size={20} color="#dc2626" />
+          <Text style={styles.dangerButtonText}>{t('auth.logout')}</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.dangerButton]}
           onPress={() => setResetDialogVisible(true)}
@@ -227,6 +265,17 @@ export default function SettingsScreen(): React.JSX.Element {
           <Text style={styles.dangerButtonText}>{t('settings.dataManagement.reset')}</Text>
         </TouchableOpacity>
       </View>
+
+      <ConfirmDialog
+        visible={logoutDialogVisible}
+        message={t('auth.logoutConfirm')}
+        onConfirm={() => {
+          logout();
+          setLogoutDialogVisible(false);
+        }}
+        onDismiss={() => setLogoutDialogVisible(false)}
+        destructive
+      />
 
       <ConfirmDialog
         visible={resetDialogVisible}
