@@ -12,7 +12,7 @@ import {
   ApiProductDto,
   ApiEntryDto,
 } from '../../services/api';
-import { STORAGE_KEYS } from '../../constants';
+import { STORAGE_KEYS, DEFAULT_API_URL } from '../../constants';
 
 // ── Category mapping: backend enum name → UI key ─────────
 const CATEGORY_MAP: Record<string, ProductCategory> = {
@@ -133,7 +133,7 @@ export const useProductsStore = create<ProductsStore>()(
       searchQuery: '',
       selectedCategory: null,
       babyInfo: { name: '', birthDate: '', complementaryStart: '', weight: '' },
-      apiBaseUrl: '',
+      apiBaseUrl: DEFAULT_API_URL,
       entryIdMap: {},
 
       initializeProducts: () => {
