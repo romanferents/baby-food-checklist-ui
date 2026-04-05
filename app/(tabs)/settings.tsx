@@ -20,11 +20,13 @@ export default function SettingsScreen(): React.JSX.Element {
   const products = useProductsStore((s) => s.products);
   const babyInfo = useProductsStore((s) => s.babyInfo);
   const setBabyInfo = useProductsStore((s) => s.setBabyInfo);
-  const { resetAllProgress } = useProductActions();
+  const apiBaseUrl = useProductsStore((s) => s.apiBaseUrl);
+  const { resetAllProgress, setApiBaseUrl, loadFromApi } = useProductActions();
   const { user } = useAuth();
   const logout = useLogout();
   const [resetDialogVisible, setResetDialogVisible] = useState(false);
   const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
+  const [localApiUrl, setLocalApiUrl] = useState(apiBaseUrl);
 
   const isUkrainian = i18n.language === 'uk';
 
@@ -42,6 +44,15 @@ export default function SettingsScreen(): React.JSX.Element {
   const handleReset = () => {
     resetAllProgress();
     setResetDialogVisible(false);
+  };
+
+  const handleSaveApiUrl = async () => {
+    const url = localApiUrl.trim().replace(/\/+$/, '');
+    setApiBaseUrl(url);
+    await AsyncStorage.setItem(STORAGE_KEYS.API_URL, url);
+    if (url) {
+      loadFromApi();
+    }
   };
 
   return (
@@ -143,6 +154,43 @@ export default function SettingsScreen(): React.JSX.Element {
               </View>
             </>
           ) : null}
+        </View>
+      </View>
+
+      {/* API Server */}
+      <View style={styles.section}>
+        <Text style={styles.sectionLabel}>🔗 {t('settings.sync.title')}</Text>
+        <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>{t('settings.sync.apiUrl')}</Text>
+            <TextInput
+              placeholder="http://localhost:5247"
+              placeholderTextColor="#9ca3af"
+              value={localApiUrl}
+              onChangeText={setLocalApiUrl}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="url"
+              style={[
+                styles.textInput,
+                { color: theme.colors.onSurface, backgroundColor: '#f9fafb' },
+              ]}
+            />
+          </View>
+          <View style={styles.divider} />
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={handleSaveApiUrl}
+            activeOpacity={0.7}
+          >
+            <View style={styles.settingLeft}>
+              <Text style={styles.actionEmoji}>🔄</Text>
+              <Text style={[styles.settingText, { color: theme.colors.onSurface }]}>
+                {t('settings.sync.syncNow')}
+              </Text>
+            </View>
+            <MaterialCommunityIcons name="chevron-right" size={20} color="#d1d5db" />
+          </TouchableOpacity>
         </View>
       </View>
 

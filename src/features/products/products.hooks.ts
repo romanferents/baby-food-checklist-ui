@@ -24,6 +24,7 @@ export function useAppStats(): AppStats {
 
 export function useProductActions(): {
   initializeProducts: () => void;
+  loadFromApi: () => Promise<void>;
   updateProduct: (id: string, update: ProductUpdate) => void;
   addProduct: (product: Product) => void;
   deleteProduct: (id: string) => void;
@@ -32,8 +33,10 @@ export function useProductActions(): {
   setSelectedCategory: (category: Product['category'] | null) => void;
   resetAllProgress: () => void;
   importProducts: (products: Product[]) => void;
+  setApiBaseUrl: (url: string) => void;
 } {
   const initializeProducts = useProductsStore((s) => s.initializeProducts);
+  const loadFromApi = useProductsStore((s) => s.loadFromApi);
   const updateProduct = useProductsStore((s) => s.updateProduct);
   const addProduct = useProductsStore((s) => s.addProduct);
   const deleteProduct = useProductsStore((s) => s.deleteProduct);
@@ -42,9 +45,11 @@ export function useProductActions(): {
   const setSelectedCategory = useProductsStore((s) => s.setSelectedCategory);
   const resetAllProgress = useProductsStore((s) => s.resetAllProgress);
   const importProducts = useProductsStore((s) => s.importProducts);
+  const setApiBaseUrl = useProductsStore((s) => s.setApiBaseUrl);
 
   return {
     initializeProducts,
+    loadFromApi,
     updateProduct,
     addProduct,
     deleteProduct,
@@ -53,5 +58,6 @@ export function useProductActions(): {
     setSelectedCategory,
     resetAllProgress,
     importProducts,
+    setApiBaseUrl,
   };
 }

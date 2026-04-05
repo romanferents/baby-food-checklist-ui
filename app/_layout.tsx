@@ -7,6 +7,8 @@ import '../src/i18n';
 import { lightTheme } from '../src/theme';
 import { useProductActions } from '../src/features/products/products.hooks';
 import { useAuth } from '../src/features/auth/auth.hooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { STORAGE_KEYS } from '../src/constants';
 
 function AuthGate({ children }: { children: React.ReactNode }): React.JSX.Element {
   const { isAuthenticated } = useAuth();
@@ -27,11 +29,24 @@ function AuthGate({ children }: { children: React.ReactNode }): React.JSX.Elemen
 }
 
 function AppContent(): React.JSX.Element {
-  const { initializeProducts } = useProductActions();
+  const { isAuthenticated } = useAuth();
+  const { loadFromApi, setApiBaseUrl } = useProductActions();
 
   useEffect(() => {
-    initializeProducts();
-  }, [initializeProducts]);
+    if (!isAuthenticated) return;
+
+    const load = async () => {
+      const savedUrl = await AsyncStorage.getItem(STORAGE_KEYS.API_URL);
+      if (savedUrl) {
+        setApiBaseUrl(savedUrl);
+        // Small delay so the store picks up the new baseUrl
+        setTimeout(() => {
+          loadFromApi();
+        }, 50);
+      }
+    };
+    load();
+  }, [isAuthenticated, loadFromApi, setApiBaseUrl]);
 
   return (
     <AuthGate>

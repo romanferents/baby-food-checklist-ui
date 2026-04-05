@@ -1,10 +1,82 @@
-import { Product } from '../features/products/types';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../features/auth/types';
 import { useAuthStore } from '../features/auth/auth.store';
 
-export interface ApiConfig {
-  baseUrl: string;
+// ──────────────────────────────────────────────────────────
+// API response types (match backend DTOs)
+// ──────────────────────────────────────────────────────────
+
+export interface ApiProductDto {
+  id: string;
+  nameUk: string;
+  nameEn: string;
+  category: string;
+  categoryNameUk: string;
+  categoryNameEn: string;
+  isDefault: boolean;
+  sortOrder: number;
 }
+
+export interface ApiEntryDto {
+  id: string;
+  productId: string;
+  productNameUk: string;
+  productNameEn: string;
+  tried: boolean;
+  firstTriedAt: string | null;
+  rating: string | null;
+  reactionNote: string | null;
+  notes: string | null;
+  isFavorite: boolean;
+}
+
+export interface ApiStatisticsDto {
+  totalProducts: number;
+  triedProducts: number;
+  progressPercentage: number;
+  categoryBreakdown: ApiCategoryStatDto[];
+}
+
+export interface ApiCategoryStatDto {
+  category: string;
+  categoryNameUk: string;
+  categoryNameEn: string;
+  totalProducts: number;
+  triedProducts: number;
+  progressPercentage: number;
+}
+
+export interface UpsertEntryRequest {
+  productId: string;
+  tried: boolean;
+  firstTriedAt?: string | null;
+  rating?: string | null;
+  reactionNote?: string | null;
+  notes?: string | null;
+  isFavorite: boolean;
+}
+
+export interface CreateProductRequest {
+  nameUk: string;
+  nameEn: string;
+  category: string;
+}
+
+// ──────────────────────────────────────────────────────────
+// Error class
+// ──────────────────────────────────────────────────────────
+
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// Authenticated fetch wrapper (auto-attaches JWT, auto-logout on 401)
+// ──────────────────────────────────────────────────────────
 
 async function authenticatedFetch(url: string, options: RequestInit = {}): Promise<Response> {
   const { token } = useAuthStore.getState();
@@ -25,11 +97,44 @@ async function authenticatedFetch(url: string, options: RequestInit = {}): Promi
 
   if (response.status === 401) {
     useAuthStore.getState().logout();
-    throw new Error('Unauthorized');
+    throw new ApiError('Unauthorized', 401);
   }
 
   return response;
 }
+
+async function apiGet<T>(baseUrl: string, path: string): Promise<T> {
+  const response = await authenticatedFetch(`${baseUrl}${path}`);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new ApiError(errorData?.title ?? response.statusText, response.status);
+  }
+  return (await response.json()) as T;
+}
+
+async function apiPost<T>(baseUrl: string, path: string, body: unknown): Promise<T> {
+  const response = await authenticatedFetch(`${baseUrl}${path}`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new ApiError(errorData?.title ?? response.statusText, response.status);
+  }
+  return (await response.json()) as T;
+}
+
+async function apiDelete(baseUrl: string, path: string): Promise<void> {
+  const response = await authenticatedFetch(`${baseUrl}${path}`, { method: 'DELETE' });
+  if (!response.ok && response.status !== 204) {
+    const errorData = await response.json().catch(() => null);
+    throw new ApiError(errorData?.title ?? response.statusText, response.status);
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// Auth endpoints (no JWT required)
+// ──────────────────────────────────────────────────────────
 
 export async function loginUser(baseUrl: string, credentials: LoginRequest): Promise<AuthResponse> {
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
@@ -63,36 +168,60 @@ export async function registerUser(baseUrl: string, data: RegisterRequest): Prom
   return (await response.json()) as AuthResponse;
 }
 
-export class ApiError extends Error {
-  status: number;
-  constructor(message: string, status: number) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = status;
+// ──────────────────────────────────────────────────────────
+// Products (OData query + CRUD)
+// ──────────────────────────────────────────────────────────
+
+export async function fetchProductsFromApi(baseUrl: string): Promise<ApiProductDto[]> {
+  const response = await authenticatedFetch(
+    `${baseUrl}/odata/v1/Products?$orderby=SortOrder&$count=true`,
+  );
+  if (!response.ok) {
+    throw new ApiError(`Fetch products failed: ${response.statusText}`, response.status);
   }
+  const data = await response.json();
+  return (data.value ?? data) as ApiProductDto[];
 }
 
-export async function syncProducts(products: Product[], config: ApiConfig): Promise<Product[]> {
-  const response = await authenticatedFetch(`${config.baseUrl}/api/v1/products/sync`, {
-    method: 'POST',
-    body: JSON.stringify({ products }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Sync failed: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data.products as Product[];
+export async function createProductOnApi(
+  baseUrl: string,
+  body: CreateProductRequest,
+): Promise<ApiProductDto> {
+  return apiPost<ApiProductDto>(baseUrl, '/api/v1/products', body);
 }
 
-export async function fetchProducts(config: ApiConfig): Promise<Product[]> {
-  const response = await authenticatedFetch(`${config.baseUrl}/api/v1/products`);
+export async function deleteProductOnApi(baseUrl: string, id: string): Promise<void> {
+  return apiDelete(baseUrl, `/api/v1/products/${id}`);
+}
 
+// ──────────────────────────────────────────────────────────
+// Entries (OData query + upsert + delete)
+// ──────────────────────────────────────────────────────────
+
+export async function fetchEntriesFromApi(baseUrl: string): Promise<ApiEntryDto[]> {
+  const response = await authenticatedFetch(`${baseUrl}/odata/v1/Entries?$count=true`);
   if (!response.ok) {
-    throw new Error(`Fetch failed: ${response.statusText}`);
+    throw new ApiError(`Fetch entries failed: ${response.statusText}`, response.status);
   }
-
   const data = await response.json();
-  return data.products as Product[];
+  return (data.value ?? data) as ApiEntryDto[];
+}
+
+export async function upsertEntryOnApi(
+  baseUrl: string,
+  body: UpsertEntryRequest,
+): Promise<ApiEntryDto> {
+  return apiPost<ApiEntryDto>(baseUrl, '/api/v1/entries', body);
+}
+
+export async function deleteEntryOnApi(baseUrl: string, entryId: string): Promise<void> {
+  return apiDelete(baseUrl, `/api/v1/entries/${entryId}`);
+}
+
+// ──────────────────────────────────────────────────────────
+// Statistics
+// ──────────────────────────────────────────────────────────
+
+export async function fetchStatisticsFromApi(baseUrl: string): Promise<ApiStatisticsDto> {
+  return apiGet<ApiStatisticsDto>(baseUrl, '/api/v1/statistics');
 }
