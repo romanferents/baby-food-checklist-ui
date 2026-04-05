@@ -7,14 +7,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { spacing } from '../src/theme/spacing';
 import { useAuthActions } from '../src/features/auth/auth.hooks';
 import { loginUser, ApiError } from '../src/services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '../src/constants';
+import { useProductsStore } from '../src/features/products/products.store';
 
 export default function LoginScreen(): React.JSX.Element {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const { setAuth } = useAuthActions();
+  const apiBaseUrl = useProductsStore((s) => s.apiBaseUrl);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -40,8 +40,7 @@ export default function LoginScreen(): React.JSX.Element {
 
     setLoading(true);
     try {
-      const apiUrl = (await AsyncStorage.getItem(STORAGE_KEYS.API_URL)) ?? '';
-      const response = await loginUser(apiUrl, { username: username.trim(), password });
+      const response = await loginUser(apiBaseUrl, { username: username.trim(), password });
       setAuth(response.token, {
         userId: response.userId,
         username: response.username,

@@ -7,8 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { spacing } from '../src/theme/spacing';
 import { useAuthActions } from '../src/features/auth/auth.hooks';
 import { registerUser, ApiError } from '../src/services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '../src/constants';
+import { useProductsStore } from '../src/features/products/products.store';
 
 const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,6 +17,7 @@ export default function RegisterScreen(): React.JSX.Element {
   const theme = useTheme();
   const router = useRouter();
   const { setAuth } = useAuthActions();
+  const apiBaseUrl = useProductsStore((s) => s.apiBaseUrl);
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -71,8 +71,7 @@ export default function RegisterScreen(): React.JSX.Element {
 
     setLoading(true);
     try {
-      const apiUrl = (await AsyncStorage.getItem(STORAGE_KEYS.API_URL)) ?? '';
-      const response = await registerUser(apiUrl, {
+      const response = await registerUser(apiBaseUrl, {
         username: username.trim(),
         email: email.trim(),
         password,

@@ -49,7 +49,6 @@ export default function SettingsScreen(): React.JSX.Element {
   const handleSaveApiUrl = async () => {
     const url = localApiUrl.trim().replace(/\/+$/, '');
     setApiBaseUrl(url);
-    await AsyncStorage.setItem(STORAGE_KEYS.API_URL, url);
     if (url) {
       loadFromApi();
     }
