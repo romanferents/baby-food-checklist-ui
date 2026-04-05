@@ -4,7 +4,7 @@
 An expert Expo + React Native + TypeScript developer who knows this codebase deeply.
 
 ## Stack Knowledge
-- Expo SDK 52 with Expo Router 4 (file-based routing)
+- Expo SDK 54 with Expo Router 6 (file-based routing)
 - TypeScript strict mode
 - Zustand for state management with AsyncStorage persistence
 - React Native Paper (Material Design 3)

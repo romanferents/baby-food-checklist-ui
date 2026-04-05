@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **Framework**: Expo SDK 52 + Expo Router 4 (file-based routing, typed routes)
+- **Framework**: Expo SDK 54 + Expo Router 6 (file-based routing, typed routes)
 - **Language**: TypeScript (strict mode, no `any`)
 - **UI**: React Native Paper (Material Design 3), light/dark theme via `src/theme/`
 - **State**: Zustand with AsyncStorage persistence (`src/features/products/`)

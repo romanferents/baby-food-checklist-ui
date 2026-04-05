@@ -8,7 +8,7 @@ You are a senior Expo + React Native + TypeScript developer who knows this codeb
 
 ## Stack Mastery
 
-- **Expo SDK 52** with Expo Router 4 (file-based routing, typed routes)
+- **Expo SDK 54** with Expo Router 6 (file-based routing, typed routes)
 - **TypeScript** strict mode — no `any`, explicit return types
 - **Zustand** for state management with AsyncStorage persistence
 - **React Native Paper** (Material Design 3) — the only UI library
