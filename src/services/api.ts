@@ -49,7 +49,7 @@ export interface UpsertEntryRequest {
   productId: string;
   tried: boolean;
   firstTriedAt?: string | null;
-  rating?: string | null;
+  rating?: number | null;
   reactionNote?: string | null;
   notes?: string | null;
   isFavorite: boolean;
@@ -58,7 +58,93 @@ export interface UpsertEntryRequest {
 export interface CreateProductRequest {
   nameUk: string;
   nameEn: string;
-  category: string;
+  category: number;
+}
+
+// ──────────────────────────────────────────────────────────
+// OData PascalCase → camelCase normalization
+// ──────────────────────────────────────────────────────────
+
+/** Category enum integer → string mapping (matches backend enum) */
+const CATEGORY_INT_TO_STRING: Record<number, string> = {
+  1: 'Vegetables',
+  2: 'Fruits',
+  3: 'Dairy',
+  4: 'Meat',
+  5: 'Grains',
+  6: 'NutsSeeds',
+  7: 'Fish',
+  8: 'Spices',
+  9: 'Other',
+};
+
+/** Category string → integer mapping for POST requests */
+const CATEGORY_STRING_TO_INT: Record<string, number> = {
+  Vegetables: 1,
+  Fruits: 2,
+  Dairy: 3,
+  Meat: 4,
+  Grains: 5,
+  NutsSeeds: 6,
+  Fish: 7,
+  Spices: 8,
+  Other: 9,
+};
+
+export function categoryToInt(category: string): number {
+  return CATEGORY_STRING_TO_INT[category] ?? 1;
+}
+
+/** FoodRating enum integer → string mapping */
+const RATING_INT_TO_STRING: Record<number, string> = {
+  1: 'Liked',
+  2: 'Neutral',
+  3: 'Disliked',
+};
+
+/** FoodRating string → integer mapping for POST requests */
+const RATING_STRING_TO_INT: Record<string, number> = {
+  Liked: 1,
+  Neutral: 2,
+  Disliked: 3,
+};
+
+export function ratingToInt(rating: string): number | null {
+  return RATING_STRING_TO_INT[rating] ?? null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeProduct(raw: any): ApiProductDto {
+  const cat = raw.Category ?? raw.category;
+  const categoryStr = typeof cat === 'number' ? (CATEGORY_INT_TO_STRING[cat] ?? 'Vegetables') : (cat ?? 'Vegetables');
+  return {
+    id: raw.Id ?? raw.id,
+    nameUk: raw.NameUk ?? raw.nameUk ?? '',
+    nameEn: raw.NameEn ?? raw.nameEn ?? '',
+    category: categoryStr,
+    categoryNameUk: raw.CategoryNameUk ?? raw.categoryNameUk ?? '',
+    categoryNameEn: raw.CategoryNameEn ?? raw.categoryNameEn ?? '',
+    isDefault: raw.IsDefault ?? raw.isDefault ?? true,
+    sortOrder: raw.SortOrder ?? raw.sortOrder ?? 0,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeEntry(raw: any): ApiEntryDto {
+  const rawRating = raw.Rating ?? raw.rating ?? null;
+  const rating = typeof rawRating === 'number' ? (RATING_INT_TO_STRING[rawRating] ?? null) : rawRating;
+  return {
+    id: raw.Id ?? raw.id,
+    productId: raw.ProductId ?? raw.productId,
+    productNameUk: raw.ProductNameUk ?? raw.productNameUk ?? '',
+    productNameEn: raw.ProductNameEn ?? raw.productNameEn ?? '',
+    tried: raw.Tried ?? raw.tried ?? false,
+    firstTriedAt: raw.FirstTriedAt ?? raw.firstTriedAt ?? null,
+    rating,
+    reactionNote: raw.ReactionNote ?? raw.reactionNote ?? null,
+    notes: raw.Notes ?? raw.notes ?? null,
+    isFavorite: raw.IsFavorite ?? raw.isFavorite ?? false,
+  };
 }
 
 // ──────────────────────────────────────────────────────────
@@ -180,7 +266,8 @@ export async function fetchProductsFromApi(baseUrl: string): Promise<ApiProductD
     throw new ApiError(`Fetch products failed: ${response.statusText}`, response.status);
   }
   const data = await response.json();
-  return (data.value ?? data) as ApiProductDto[];
+  const raw = (data.value ?? data) as unknown[];
+  return raw.map(normalizeProduct);
 }
 
 export async function createProductOnApi(
@@ -204,7 +291,8 @@ export async function fetchEntriesFromApi(baseUrl: string): Promise<ApiEntryDto[
     throw new ApiError(`Fetch entries failed: ${response.statusText}`, response.status);
   }
   const data = await response.json();
-  return (data.value ?? data) as ApiEntryDto[];
+  const raw = (data.value ?? data) as unknown[];
+  return raw.map(normalizeEntry);
 }
 
 export async function upsertEntryOnApi(

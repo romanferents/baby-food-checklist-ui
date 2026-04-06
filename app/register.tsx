@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, TextInput, Button, HelperText, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { spacing } from '../src/theme/spacing';
-import { useAuthActions } from '../src/features/auth/auth.hooks';
+import { useAuthActions, useAuth } from '../src/features/auth/auth.hooks';
 import { registerUser, ApiError } from '../src/services/api';
 import { useProductsStore } from '../src/features/products/products.store';
 
@@ -17,6 +17,7 @@ export default function RegisterScreen(): React.JSX.Element {
   const theme = useTheme();
   const router = useRouter();
   const { setAuth } = useAuthActions();
+  const { isAuthenticated } = useAuth();
   const apiBaseUrl = useProductsStore((s) => s.apiBaseUrl);
 
   const [username, setUsername] = useState('');
@@ -27,6 +28,10 @@ export default function RegisterScreen(): React.JSX.Element {
   const [error, setError] = useState('');
   const [secureEntry, setSecureEntry] = useState(true);
   const [secureConfirm, setSecureConfirm] = useState(true);
+
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)" />;
+  }
 
   const validate = (): boolean => {
     const trimmedUsername = username.trim();

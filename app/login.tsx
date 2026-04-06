@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, TextInput, Button, HelperText, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { spacing } from '../src/theme/spacing';
-import { useAuthActions } from '../src/features/auth/auth.hooks';
+import { useAuthActions, useAuth } from '../src/features/auth/auth.hooks';
 import { loginUser, ApiError } from '../src/services/api';
 import { useProductsStore } from '../src/features/products/products.store';
 
@@ -13,6 +13,7 @@ export default function LoginScreen(): React.JSX.Element {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const { setAuth } = useAuthActions();
   const apiBaseUrl = useProductsStore((s) => s.apiBaseUrl);
 
@@ -21,6 +22,10 @@ export default function LoginScreen(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [secureEntry, setSecureEntry] = useState(true);
+
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)" />;
+  }
 
   const validate = (): boolean => {
     if (!username.trim()) {

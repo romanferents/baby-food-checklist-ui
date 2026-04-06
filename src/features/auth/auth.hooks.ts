@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuthStore } from './auth.store';
 import { AuthUser } from './types';
 
@@ -29,4 +29,19 @@ export function useLogout(): () => void {
   return useCallback(() => {
     logout();
   }, [logout]);
+}
+
+export function useAuthHasHydrated(): boolean {
+  const [hasHydrated, setHasHydrated] = useState(
+    () => useAuthStore.persist.hasHydrated(),
+  );
+
+  useEffect(() => {
+    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
+      setHasHydrated(true);
+    });
+    return unsubscribe;
+  }, []);
+
+  return hasHydrated;
 }
