@@ -11,6 +11,7 @@ import {
   deleteEntryOnApi,
   ApiProductDto,
   ApiEntryDto,
+  categoryToInt,
 } from '../../services/api';
 import { STORAGE_KEYS, DEFAULT_API_URL } from '../../constants';
 
@@ -47,11 +48,11 @@ function mapRating(r: string | null | undefined): ProductRating | undefined {
   return undefined;
 }
 
-function ratingToApi(r: ProductRating | undefined): string | null {
+function ratingToApi(r: ProductRating | undefined): number | null {
   if (!r) return null;
-  if (r === 'liked') return 'Liked';
-  if (r === 'neutral') return 'Neutral';
-  if (r === 'disliked') return 'Disliked';
+  if (r === 'liked') return 1;
+  if (r === 'neutral') return 2;
+  if (r === 'disliked') return 3;
   return null;
 }
 
@@ -213,7 +214,7 @@ export const useProductsStore = create<ProductsStore>()(
         createProductOnApi(baseUrl, {
           nameUk: product.nameUk,
           nameEn: product.nameEn,
-          category: CATEGORY_REVERSE[product.category] ?? 'Vegetables',
+          category: categoryToInt(CATEGORY_REVERSE[product.category] ?? 'Vegetables'),
         })
           .then((apiProduct) => {
             // Replace temp ID with server ID

@@ -1,12 +1,23 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { useAuth, useAuthHasHydrated } from '../../src/features/auth/auth.hooks';
 
 export default function TabsLayout(): React.JSX.Element {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { isAuthenticated } = useAuth();
+  const hasHydrated = useAuthHasHydrated();
+
+  if (!hasHydrated) {
+    return <></>;
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <Tabs

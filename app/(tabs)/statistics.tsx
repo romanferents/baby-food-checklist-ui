@@ -58,7 +58,7 @@ export default function StatisticsScreen(): React.JSX.Element {
             {
               icon: '⏳',
               value: stats.totalProducts - stats.triedProducts,
-              label: t('statistics.remaining') || 'Remaining',
+              label: t('statistics.remaining'),
             },
             { icon: '😍', value: stats.liked, label: t('product.rating.likedText') },
             { icon: '❤️', value: stats.favorites, label: t('statistics.favorites') },
